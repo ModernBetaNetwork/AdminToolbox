@@ -40,7 +40,7 @@ public class Admin
         }
 
         setAdminState(AdminState.SPECTATING);
-        adminPlayer.teleport(currentLocationHistory.get(locationIndex));
+        adminPlayer.teleportAsync(currentLocationHistory.get(locationIndex));
     }
 
     public void teleportForwardInHistory()
@@ -62,7 +62,7 @@ public class Admin
 
         Location teleportLocation = currentLocationHistory.get(locationIndex);
         setAdminState(AdminState.SPECTATING);
-        adminPlayer.teleport(teleportLocation);
+        adminPlayer.teleportAsync(teleportLocation);
     }
 
 
@@ -107,9 +107,10 @@ public class Admin
 
             setAdminState(AdminState.SPECTATING);
             Location finalTargetLocation = targetLocation;
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AdminToolbox.getInstance(), () -> {
-                adminPlayer.teleport(finalTargetLocation); // tp to self so player goes to ground (tick later, doesn't TP otherwise)
-            },  2L);
+            adminPlayer.getScheduler().runDelayed(AdminToolbox.getInstance(), (task) -> {
+                adminPlayer.teleportAsync(finalTargetLocation); // tp to self so player goes to ground (tick later,
+                // doesn't TP otherwise)
+            }, null, 2L);
 
             for (Admin admin : onlineAdmins)
             {
@@ -157,15 +158,15 @@ public class Admin
                     Location adminTpLocation = adminLocation.clone().subtract(0, y, 0);
                     if (adminTpLocation.getBlock().getType() == Material.AIR) continue;
 
-                    adminPlayer.teleport(adminTpLocation.add(0, 1, 0));
+                    adminPlayer.teleportAsync(adminTpLocation.add(0, 1, 0));
                     adminLocation.add(adminTpLocation);
                     break;
                 }
 
                 // reveal the admin player by setting their gamemode to survival
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AdminToolbox.getInstance(), () -> {
+                adminPlayer.getScheduler().runDelayed(AdminToolbox.getInstance(), (task) -> {
                     adminPlayer.setGameMode(GameMode.SURVIVAL);
-                },  1L);
+                }, null, 1L);
 
                 break;
 
@@ -190,7 +191,7 @@ public class Admin
 
     void loadPriorData()
     {
-        if (savedPriorLocation != null) adminPlayer.teleport(savedPriorLocation);
+        if (savedPriorLocation != null) adminPlayer.teleportAsync(savedPriorLocation);
         savedPriorLocation = null;
 
         if (savedPriorInventory != null) adminPlayer.getInventory().setContents(savedPriorInventory);

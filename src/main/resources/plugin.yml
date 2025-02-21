@@ -2,6 +2,7 @@ name: AdminToolbox
 version: '${project.version}'
 main: org.modernbeta.admintoolbox.AdminToolbox
 api-version: '1.20'
+folia-supported: true
 commands:
   target:
     description: Puts admin in spectating mode and optionally teleports to target player
