@@ -60,7 +60,7 @@ public class AdminManager implements Listener
         return onlineAdmins.values().stream().toList();
     }
 
-    public boolean isAdmin(Player player)
+    public static boolean isAdmin(Player player)
     {
         return onlineAdmins.containsKey(player.getUniqueId());
     }
