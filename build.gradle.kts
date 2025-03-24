@@ -1,6 +1,7 @@
 plugins {
 	id("java")
 	id("com.github.johnrengelman.shadow") version "8.1.1"
+	id("maven-publish")
 }
 
 group = "org.modernbeta.admintoolbox"
@@ -34,5 +35,16 @@ tasks.processResources {
 	filteringCharset = "UTF-8"
 	filesMatching("plugin.yml") {
 		expand(props)
+	}
+}
+
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			groupId = "org.modernbeta"
+			artifactId = "AdminToolbox"
+
+			from(components["java"])
+		}
 	}
 }
