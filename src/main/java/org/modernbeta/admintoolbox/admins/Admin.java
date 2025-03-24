@@ -21,13 +21,13 @@ public class Admin
     public Admin(Player adminPlayer)
     {
         this.adminPlayer = adminPlayer;
-        setAdminState(AdminState.FREEROAM);
+        setAdminState(AdminState.FREE_ROAMING);
     }
 
 
     public void teleportBackwardInHistory()
     {
-        boolean startingFromFreeRoam = adminState == AdminState.FREEROAM;
+        boolean startingFromFreeRoam = adminState == AdminState.FREE_ROAMING;
         if (!startingFromFreeRoam) locationHistoryOffset++;
         else locationHistoryOffset = 0;
 
@@ -84,7 +84,7 @@ public class Admin
             locationHistoryOffset = 0;
         }
 
-        if (adminState == AdminState.FREEROAM)
+        if (adminState == AdminState.FREE_ROAMING)
         {
             currentLocationHistory.add(adminPlayer.getLocation());
             locationHistoryOffset = 0;
@@ -121,10 +121,10 @@ public class Admin
             return;
         }
 
-        if (adminState.equals(AdminState.FREEROAM) || adminState.equals(AdminState.REVEALED))
+        if (adminState.equals(AdminState.FREE_ROAMING) || adminState.equals(AdminState.REVEALED))
             setAdminState(AdminState.SPECTATING);
         else
-            setAdminState(AdminState.FREEROAM);
+            setAdminState(AdminState.FREE_ROAMING);
     }
 
 
@@ -134,15 +134,15 @@ public class Admin
         this.adminState = newAdminState;
         switch (newAdminState)
         {
-            case FREEROAM:
-                if (previousAdminState == AdminState.FREEROAM) break;
+            case FREE_ROAMING:
+                if (previousAdminState == AdminState.FREE_ROAMING) break;
                 adminPlayer.setGameMode(GameMode.SURVIVAL);
                 loadPriorData();
                 break;
 
 
             case SPECTATING:
-                if (previousAdminState.equals(AdminState.FREEROAM)) savePriorData();
+                if (previousAdminState.equals(AdminState.FREE_ROAMING)) savePriorData();
                 adminPlayer.setGameMode(GameMode.SPECTATOR);
                 break;
 

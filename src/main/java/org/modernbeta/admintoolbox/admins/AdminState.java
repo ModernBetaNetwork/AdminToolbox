@@ -1,7 +1,7 @@
 package org.modernbeta.admintoolbox.admins;
 
 public enum AdminState {
-    FREEROAM,
+    FREE_ROAMING,
     SPECTATING,
     REVEALED
 }

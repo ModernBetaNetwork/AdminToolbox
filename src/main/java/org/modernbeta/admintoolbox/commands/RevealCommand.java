@@ -28,7 +28,7 @@ public class RevealCommand implements CommandExecutor
             case REVEALED:
                 player.sendMessage("You are already revealed.");
                 return false;
-            case FREEROAM:
+            case FREE_ROAMING:
                 player.sendMessage("You can only reveal if in /admin mode.");
                 return false;
             default:

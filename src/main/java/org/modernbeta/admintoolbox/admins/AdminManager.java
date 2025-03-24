@@ -29,7 +29,7 @@ public class AdminManager implements Listener
     {
         if (!isAdmin(player)) return;
 
-        getOnlineAdmin(player).setAdminState(AdminState.FREEROAM);
+        getOnlineAdmin(player).setAdminState(AdminState.FREE_ROAMING);
         onlineAdmins.remove(player.getUniqueId());
     }
 
@@ -39,7 +39,7 @@ public class AdminManager implements Listener
         {
             if (!isAdmin(player)) continue;
 
-            getOnlineAdmin(player).setAdminState(AdminState.FREEROAM);
+            getOnlineAdmin(player).setAdminState(AdminState.FREE_ROAMING);
         }
 
         onlineAdmins.clear();
@@ -146,7 +146,7 @@ public class AdminManager implements Listener
             if (!isAdmin(player)) return;
 
             Admin admin = getOnlineAdmin(player);
-            if (admin.getAdminState() == AdminState.FREEROAM) return;
+            if (admin.getAdminState() == AdminState.FREE_ROAMING) return;
 
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AdminToolbox.getInstance(), () -> {
                 player.setHealth(20);
@@ -162,7 +162,7 @@ public class AdminManager implements Listener
         if (!isAdmin(player)) return;
 
         Admin admin = getOnlineAdmin(player);
-        if (admin.getAdminState() != AdminState.FREEROAM)
+        if (admin.getAdminState() != AdminState.FREE_ROAMING)
             event.setCancelled(true);
     }
 }
