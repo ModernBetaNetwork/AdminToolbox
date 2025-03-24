@@ -1,5 +1,12 @@
 package org.modernbeta.admintoolbox.api;
 
-public interface AdminToolboxAPI {
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.modernbeta.admintoolbox.admins.Admin;
 
+public interface AdminToolboxAPI {
+    void target(Player admin, Location location);
+    void target(Player admin, Player target);
+
+    Admin[] getOnlineAdmins();
 }

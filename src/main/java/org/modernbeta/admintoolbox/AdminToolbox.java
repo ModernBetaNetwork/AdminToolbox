@@ -1,7 +1,11 @@
 package org.modernbeta.admintoolbox;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
+import org.modernbeta.admintoolbox.admins.Admin;
 import org.modernbeta.admintoolbox.admins.AdminManager;
 import org.modernbeta.admintoolbox.api.AdminToolboxAPI;
 import org.modernbeta.admintoolbox.commands.*;
@@ -46,4 +50,22 @@ public final class AdminToolbox extends JavaPlugin implements AdminToolboxAPI {
     public AdminManager getAdminManager() {
         return adminManager;
     }
+
+	@Override
+	public void target(Player admin, Location location) {
+		// TODO: implement this
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void target(Player admin, Player target) {
+		// TODO: implement this
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Admin[] getOnlineAdmins() {
+		// TODO: implement this
+		throw new NotImplementedException();
+	}
 }
