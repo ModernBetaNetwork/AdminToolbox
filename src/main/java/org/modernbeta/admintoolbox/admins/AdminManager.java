@@ -166,14 +166,16 @@ public class AdminManager implements Listener
     }
 
     @EventHandler
-    void onAdminHurt(PlayerDeathEvent event)
-    {
+    void onAdminDeath(PlayerDeathEvent event) {
         // admins not in free roam can't be hurt
         Player player = event.getPlayer();
         if (!isAdmin(player)) return;
 
         Admin admin = getOnlineAdmin(player);
-        if (admin.getAdminState() != AdminState.FREEROAM)
-            event.setCancelled(true);
+        if (admin.getAdminState() != AdminState.FREEROAM) {
+            admin.setAdminState(AdminState.FREEROAM);
+            event.getDrops().clear();
+            event.setKeepInventory(true);
+        }
     }
 }
