@@ -1,7 +1,6 @@
 package org.modernbeta.admintoolbox.admins;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -159,19 +158,25 @@ public class AdminManager implements Listener
 
         Admin admin = getOnlineAdmin(player);
         if (admin.getAdminState() == AdminState.FREEROAM) return;
+        // allow PvP damage
+        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK && event.getDamageSource().getCausingEntity() instanceof Player) {
+            return;
+        }
 
         event.setDamage(0.0);
     }
 
     @EventHandler
-    void onAdminDeath(PlayerDeathEvent event)
-    {
+    void onAdminDeath(PlayerDeathEvent event) {
         // admins not in free roam can't be hurt
         Player player = event.getPlayer();
         if (!isAdmin(player)) return;
 
         Admin admin = getOnlineAdmin(player);
-        if (admin.getAdminState() != AdminState.FREEROAM)
-            event.setCancelled(true);
+        if (admin.getAdminState() != AdminState.FREEROAM) {
+            admin.setAdminState(AdminState.FREEROAM);
+            event.getDrops().clear();
+            event.setKeepInventory(true);
+        }
     }
 }
