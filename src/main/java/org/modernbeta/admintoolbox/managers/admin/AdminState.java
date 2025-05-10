@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class AdminState {
@@ -57,12 +54,32 @@ public class AdminState {
 	}
 
 	static AdminState fromConfig(UUID playerId, ConfigurationSection playerSection) {
-		ItemStack[] items = new ItemStack[0];
-		if (playerSection.isList("inventory")) {
-			@SuppressWarnings("unchecked")
-			List<ItemStack> itemList = (List<ItemStack>) playerSection.getList("inventory");
-			if (itemList != null) {
-				items = itemList.toArray(new ItemStack[0]);
+		final int PLAYER_INVENTORY_SLOTS = 41;
+
+		ItemStack[] items = new ItemStack[PLAYER_INVENTORY_SLOTS];
+		if (playerSection.contains("inventory")) {
+			List<?> invList = playerSection.getList("inventory");
+			if (invList != null) {
+				for (int i = 0; i < invList.size(); i++) {
+					Object obj = invList.get(i);
+					if (obj == null) {
+						items[i] = null; // preserve empty slots
+						continue;
+					}
+					if (!(obj instanceof ItemStack stack)) {
+						AdminToolboxPlugin.getInstance().getLogger().warning(
+							String.format(
+								"Item in %s's inventory at position %d was not an ItemStack. This is a bug!\n\tFound: %s",
+								playerId,
+								i,
+								obj.toString()
+							)
+						);
+						continue;
+					}
+
+					items[i] = stack;
+				}
 			}
 		}
 

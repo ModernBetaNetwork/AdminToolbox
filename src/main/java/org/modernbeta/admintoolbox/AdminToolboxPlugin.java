@@ -79,6 +79,13 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	}
 
 	public FileConfiguration getAdminStateConfig() {
+		// TODO: this re-reads the file from file system every time, should not be needed
+		// 		but we have run into some desynced state somehow. Figure out why!
+		try {
+			this.adminStateConfig.load(adminStateConfigFile);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		return this.adminStateConfig;
 	}
 
