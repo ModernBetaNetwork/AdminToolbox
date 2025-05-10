@@ -2,7 +2,10 @@ package org.modernbeta.admintoolbox.managers.admin;
 
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,7 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -168,11 +170,9 @@ public class AdminManager implements Listener {
 				safeLocation.setY(y);
 				Block block = location.getWorld().getBlockAt(safeLocation);
 				if (!block.getType().isSolid()) continue;
-				if (Tag.FENCES.isTagged(block.getType()) || Tag.WALLS.isTagged(block.getType())) {
-					safeLocation.add(0.5, 1.5, 0.5);
-				} else {
-					safeLocation.add(0.5, 1.0, 0.5);
-				}
+				safeLocation.setY(
+					block.getBoundingBox().getMaxY()
+				);
 
 				safeLocationFuture.complete(safeLocation);
 				return;
