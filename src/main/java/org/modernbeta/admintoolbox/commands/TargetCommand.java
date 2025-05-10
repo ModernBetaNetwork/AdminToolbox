@@ -41,7 +41,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 			return false;
 		}
 
-		AtomicReference<String> targetLabel = new AtomicReference<>();
+		AtomicReference<String> targetLabelRef = new AtomicReference<>();
 		CompletableFuture<Location> targetLocationFuture = new CompletableFuture<>();
 
 		switch (args.length) {
@@ -58,10 +58,11 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 				Bukkit.getAsyncScheduler().runNow(plugin, (task) -> {
 					try {
 						OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(targetPlayerName);
-						targetLabel.set(offlineTarget.getName());
+						String targetLabel = offlineTarget.getName();
 						if (!offlineTarget.isOnline()) {
-							targetLabel.set(targetLabel.get() + " (offline player)");
+							targetLabel += " (offline player)";
 						}
+						targetLabelRef.set(targetLabel);
 						Location location = offlineTarget.getLocation();
 						if (location == null) {
 							throw new IllegalArgumentException("Player '" + targetPlayerName + "' has no location data.");
@@ -79,7 +80,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 
 					CompletableFuture<Location> highestLocationFuture = getHighestLocation(player.getWorld(), x, z);
 					highestLocationFuture.thenAccept((highestLocation) -> {
-						targetLabel.set(prettifyCoordinates(highestLocation));
+						targetLabelRef.set(prettifyCoordinates(highestLocation));
 						targetLocationFuture.complete(highestLocation);
 					}).exceptionally(ex -> {
 						targetLocationFuture.completeExceptionally(
@@ -102,7 +103,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 						player.getWorld(), x, y, z,
 						player.getYaw(), player.getPitch()
 					);
-					targetLabel.set(prettifyCoordinates(targetLocation));
+					targetLabelRef.set(prettifyCoordinates(targetLocation));
 					targetLocationFuture.complete(targetLocation);
 				} catch (NumberFormatException e) {
 					// try getting highest x/z at provided world if we couldn't parse all the coords
@@ -120,7 +121,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 
 						CompletableFuture<Location> highestLocationFuture = getHighestLocation(world, x, z);
 						highestLocationFuture.thenAccept((highestLocation) -> {
-							targetLabel.set(prettifyCoordinates(highestLocation));
+							targetLabelRef.set(prettifyCoordinates(highestLocation));
 							targetLocationFuture.complete(highestLocation);
 						}).exceptionally(ex -> {
 							targetLocationFuture.completeExceptionally(
@@ -151,7 +152,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 					}
 
 					Location targetLocation = new Location(world, x, y, z);
-					targetLabel.set(prettifyCoordinates(targetLocation));
+					targetLabelRef.set(prettifyCoordinates(targetLocation));
 					targetLocationFuture.complete(targetLocation);
 				} catch (Exception e) {
 					targetLocationFuture.completeExceptionally(e);
@@ -166,7 +167,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 			plugin.getAdminManager().target(player, location);
 			sender.sendRichMessage(
 				"<gold>Spectating at <target>",
-				Placeholder.unparsed("target", targetLabel.get())
+				Placeholder.unparsed("target", targetLabelRef.get())
 			);
 
 			if (!sender.hasPermission(AdminToolboxPlugin.BROADCAST_EXEMPT_PERMISSION)) {
@@ -176,7 +177,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 					.sendMessage(MiniMessage.miniMessage().deserialize(
 						"<gold><admin> is spectating <target>",
 						Placeholder.unparsed("admin", sender.getName()),
-						Placeholder.unparsed("target", targetLabel.get())
+						Placeholder.unparsed("target", targetLabelRef.get())
 					));
 			}
 		})).exceptionally(ex -> {
