@@ -26,6 +26,8 @@ repositories {
 dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 	implementation("com.github.LeonMangler:SuperVanish:6.2.18-3")
+	// IRP v1.6.16 -- they don't use tagged versions so we have to use commit hash :(
+//	implementation("com.github.TechnicallyCoded:Inventory-Rollback-Plus:a3daee2")
 	implementation("de.bluecolored:bluemap-api:2.7.4")
 }
 
