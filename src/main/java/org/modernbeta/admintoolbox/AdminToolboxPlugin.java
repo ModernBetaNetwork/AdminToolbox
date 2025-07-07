@@ -2,6 +2,7 @@ package org.modernbeta.admintoolbox;
 
 import de.myzelyam.api.vanish.VanishAPI;
 import de.myzelyam.supervanish.SuperVanish;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
+
+	private static final int BSTATS_PLUGIN_ID = 26406; // TODO: find a way to load this from gradle.properties
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -57,6 +60,9 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("unfreeze").setExecutor(new UnfreezeCommand());
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
+
+		new Metrics(this, BSTATS_PLUGIN_ID);
+		// we can track additional metrics if we feel like it
 
         getLogger().info(String.format("Enabled %s", getPluginMeta().getDisplayName()));
     }
