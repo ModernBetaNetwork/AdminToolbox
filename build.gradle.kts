@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+	compileOnly("org.bstats:bstats-bukkit:3.0.2")
 	implementation("com.github.LeonMangler:SuperVanish:6.2.18-3")
 	implementation("de.bluecolored:bluemap-api:2.7.4")
 }
