@@ -30,7 +30,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
 
-	private static final int BSTATS_PLUGIN_ID = 26406; // bStats: ModernBeta/AdminToolbox
+	private static final int BSTATS_PLUGIN_ID = 26406; // TODO: find a way to load this from gradle.properties
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -61,11 +61,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 
-		{
-			Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
-
-			// add custom chart stats here if desired
-		}
+		new Metrics(this, BSTATS_PLUGIN_ID);
+		// we can track additional metrics if we feel like it
 
         getLogger().info(String.format("Enabled %s", getPluginMeta().getDisplayName()));
     }
