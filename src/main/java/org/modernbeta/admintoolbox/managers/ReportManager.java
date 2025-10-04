@@ -111,14 +111,17 @@ public class ReportManager {
 		plugin.saveReportsConfig();
 	}
 
-	private Map<String, Object> serializeLocation(Location loc) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("world", loc.getWorld().getName());
-		map.put("x", loc.getX());
-		map.put("y", loc.getY());
-		map.put("z", loc.getZ());
-		return map;
-	}
+    private Map<String, Object> serializeLocation(Location loc) {
+        Map<String, Object> map = new HashMap<>();
+        String worldName = (loc.getWorld() != null)
+            ? loc.getWorld().getName()
+            : Bukkit.getWorlds().getFirst().getName();
+        map.put("world", worldName);
+        map.put("x", loc.getX());
+        map.put("y", loc.getY());
+        map.put("z", loc.getZ());
+        return map;
+    }
 
 	private Location deserializeLocation(ConfigurationSection section) {
 		if (section == null) return null;

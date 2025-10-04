@@ -1,5 +1,8 @@
 package org.modernbeta.admintoolbox.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Location;
@@ -12,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 import org.modernbeta.admintoolbox.models.Report;
+import org.modernbeta.admintoolbox.utils.LocationUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -69,11 +73,20 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
 		String coords = String.format("%.1f, %.1f, %.1f", loc.getX(), loc.getY(), loc.getZ());
 		String timestamp = report.getTimestamp().format(TIME_FORMATTER);
 
+		String worldNameForCommand = LocationUtils.getShortWorldName(loc.getWorld());
+		String targetCommand = String.format("/target %d %d %d %s",
+				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), worldNameForCommand);
+
+		Component coordsComponent = Component.text(coords)
+			.clickEvent(ClickEvent.runCommand(targetCommand))
+			.hoverEvent(HoverEvent.showText(Component.text("Click to spectate here")));
+
 		plugin.getAdminAudience()
-			.sendMessage(MiniMessage.miniMessage().deserialize("<gold>[Report] <player> at <gray><coords></gray> in <world> (<timestamp>): <reason>",
+			.sendMessage(MiniMessage.miniMessage().deserialize(
+				"<gold>[Report] <player> at <gray><coords></gray> in <world> (<timestamp>): <reason>",
 				Placeholder.component("player", player.name()),
-				Placeholder.unparsed("coords", coords),
-				Placeholder.unparsed("world", loc.getWorld().getName()),
+				Placeholder.component("coords", coordsComponent),
+				Placeholder.unparsed("world", loc.getWorld() != null ? loc.getWorld().getName() : worldNameForCommand),
 				Placeholder.unparsed("timestamp", timestamp),
 				Placeholder.unparsed("reason", reason)
 			));

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 import org.modernbeta.admintoolbox.models.Report;
+import org.modernbeta.admintoolbox.utils.LocationUtils;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,9 +26,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReportsCommand implements CommandExecutor, TabCompleter {
-	private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
-	private static final String REPORTS_COMMAND_PERMISSION = "admintoolbox.reports";
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
+    private static final String REPORTS_COMMAND_PERMISSION = "admintoolbox.reports";
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final int REPORTS_PER_PAGE = 5;
+    private static final int PAGE_BASE = 1;
 
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
@@ -40,15 +43,15 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		int page = 1;
-		if (args.length >= 1) {
-			try {
-				page = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				sender.sendRichMessage("<red>Invalid page number.");
-				return true;
-			}
-		}
+        int page = PAGE_BASE;
+        if (args.length >= 1) {
+            try {
+                page = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                sender.sendRichMessage("<red>Invalid page number.");
+                return true;
+            }
+        }
 
 		showReports(sender, page);
 		return true;
@@ -62,12 +65,11 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
 			return;
 		}
 
-		int reportsPerPage = 10;
-		int totalPages = (int) Math.ceil((double) openReports.size() / reportsPerPage);
-		page = Math.max(1, Math.min(page, totalPages));
+        int totalPages = (int) Math.ceil((double) openReports.size() / REPORTS_PER_PAGE);
+        page = Math.max(PAGE_BASE, Math.min(page, totalPages));
 
-		int startIndex = (page - 1) * reportsPerPage;
-		int endIndex = Math.min(startIndex + reportsPerPage, openReports.size());
+        int startIndex = (page - PAGE_BASE) * REPORTS_PER_PAGE;
+        int endIndex = Math.min(startIndex + REPORTS_PER_PAGE, openReports.size());
 
 		sender.sendMessage(Component.text("═══ Open Reports (Page " + page + "/" + totalPages + ") ═══", NamedTextColor.GOLD));
 
@@ -77,56 +79,65 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
 			String coords = String.format("%.1f, %.1f, %.1f", loc.getX(), loc.getY(), loc.getZ());
 			String timestamp = report.getTimestamp().format(TIME_FORMATTER);
 
-			Component reportLine = MiniMessage.miniMessage().deserialize(
-				"<gray>[<id>]</gray> <gold><player></gold> at <coords> in <world>",
-				Placeholder.unparsed("id", String.valueOf(i + 1)),
-				Placeholder.unparsed("player", report.getPlayerName()),
-				Placeholder.unparsed("coords", coords),
-				Placeholder.unparsed("world", loc.getWorld().getName())
-			);
+			Component reportLine;
 
 			Component hoverText = MiniMessage.miniMessage().deserialize(
-				"<gold>Reason:</gold> <reason>\n<gold>Time:</gold> <timestamp>\n<green>Click to teleport\n<gray>Shift+Click to resolve",
+				"<gold>Reason:</gold> <reason>\n<gold>Time:</gold> <timestamp>\n<green>Click coords to spectate\n<gray>Use button to resolve",
 				Placeholder.unparsed("reason", report.getReason()),
 				Placeholder.unparsed("timestamp", timestamp)
 			);
 
-			String tpCommand = String.format("/tp %s %.1f %.1f %.1f",
-				sender.getName(), loc.getX(), loc.getY(), loc.getZ());
 
-			reportLine = reportLine
-				.hoverEvent(HoverEvent.showText(hoverText))
-				.clickEvent(ClickEvent.runCommand(tpCommand));
+			// Build a clickable coords component that spectates in admin mode
+			int bx = loc.getBlockX();
+			int by = loc.getBlockY();
+			int bz = loc.getBlockZ();
+			String worldNameForCommand = LocationUtils.getShortWorldName(loc.getWorld());
+			String targetCommand = String.format("/target %d %d %d %s", bx, by, bz, worldNameForCommand);
 
-			sender.sendMessage(reportLine);
+			Component coordsComponent = Component.text(coords)
+				.clickEvent(ClickEvent.runCommand(targetCommand))
+				.hoverEvent(HoverEvent.showText(hoverText));
 
-			Component resolveButton = Component.text("[Resolve]", NamedTextColor.GREEN)
+			Component inlineResolve = Component.text("[Resolve]", NamedTextColor.GREEN)
 				.clickEvent(ClickEvent.runCommand("/reports resolve " + report.getId()))
 				.hoverEvent(HoverEvent.showText(Component.text("Click to resolve this report")));
 
-			sender.sendMessage(Component.text("  ").append(resolveButton)
-				.append(Component.text(" " + report.getReason(), NamedTextColor.GRAY)));
+			reportLine = MiniMessage.miniMessage().deserialize(
+				"<gray>[<id>]</gray> <gold><player></gold> at <coords> in <world> <resolve>",
+                Placeholder.unparsed("id", String.valueOf(i + PAGE_BASE)),
+				Placeholder.unparsed("player", report.getPlayerName()),
+				Placeholder.component("coords", coordsComponent),
+				Placeholder.component("resolve", inlineResolve),
+				Placeholder.unparsed("world", loc.getWorld() != null ? loc.getWorld().getName() : worldNameForCommand)
+			);
+
+			reportLine = reportLine.hoverEvent(HoverEvent.showText(hoverText));
+
+			sender.sendMessage(reportLine);
+
+			sender.sendMessage(Component.text("  " + report.getReason(), NamedTextColor.GRAY));
 		}
 
-		if (totalPages > 1) {
-			Component nav = createNavigationComponent(page, totalPages);
-			sender.sendMessage(nav);
-		}
-	}
+        if (totalPages > PAGE_BASE) {
+            Component nav = createNavigationComponent(page, totalPages);
+            sender.sendMessage(nav);
+        }
+    }
 
 	private static @NotNull Component createNavigationComponent(int page, int totalPages) {
 		Component nav = Component.text("");
-		if (page > 1) {
-			nav = nav.append(Component.text("[Previous]", NamedTextColor.YELLOW)
-				.clickEvent(ClickEvent.runCommand("/reports " + (page - 1)))
-				.hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page - 1)))));
-		}
-		if (page < totalPages) {
-			if (page > 1) nav = nav.append(Component.text(" "));
-			nav = nav.append(Component.text("[Next]", NamedTextColor.YELLOW)
-				.clickEvent(ClickEvent.runCommand("/reports " + (page + 1)))
-				.hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page + 1)))));
-		}
+        if (page > PAGE_BASE) {
+            nav = nav.append(Component.text("[Previous]", NamedTextColor.YELLOW)
+                .clickEvent(ClickEvent.runCommand("/reports " + (page - PAGE_BASE)))
+                .hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page - PAGE_BASE)))));
+        }
+        if (page < totalPages) {
+            if (page > PAGE_BASE) nav = nav.append(Component.text(" "));
+            nav = nav.append(Component.text("[Next]", NamedTextColor.YELLOW)
+                .clickEvent(ClickEvent.runCommand("/reports " + (page + PAGE_BASE)))
+                .hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page + PAGE_BASE)))));
+        }
 		return nav;
 	}
 
