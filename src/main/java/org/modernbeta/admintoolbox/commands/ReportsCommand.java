@@ -82,13 +82,12 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
 			Component reportLine;
 
 			Component hoverText = MiniMessage.miniMessage().deserialize(
-				"<gold>Reason:</gold> <reason>\n<gold>Time:</gold> <timestamp>\n<green>Click coords to spectate\n<gray>Use button to resolve",
+				"<gold>Reason:</gold> <reason>\n<gold>Time:</gold> <timestamp>\n<green>Click to spectate\n<dark_gray>ID: <id>",
 				Placeholder.unparsed("reason", report.getReason()),
-				Placeholder.unparsed("timestamp", timestamp)
+				Placeholder.unparsed("timestamp", timestamp),
+				Placeholder.unparsed("id", report.getId().toString())
 			);
 
-
-			// Build a clickable coords component that spectates in admin mode
 			int bx = loc.getBlockX();
 			int by = loc.getBlockY();
 			int bz = loc.getBlockZ();
