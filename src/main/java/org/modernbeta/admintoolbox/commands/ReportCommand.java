@@ -83,7 +83,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
 
 		plugin.getAdminAudience()
 			.sendMessage(MiniMessage.miniMessage().deserialize(
-				"<gold>[Report] <player> at <gray><coords></gray> in <world> (<timestamp>): <reason>",
+				"<gold>[Report] <player> at <gray><coords></gray> in <world> (<timestamp>):<gray> <reason>",
 				Placeholder.component("player", player.name()),
 				Placeholder.component("coords", coordsComponent),
 				Placeholder.unparsed("world", loc.getWorld() != null ? loc.getWorld().getName() : worldNameForCommand),
