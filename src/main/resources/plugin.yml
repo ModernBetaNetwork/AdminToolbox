@@ -37,6 +37,8 @@ permissions:
   admintoolbox.broadcast.exempt:
     description: Admin actions will not alert others who can receive them.
     default: false
+  admintoolbox.reports:
+    description: Can view and manage player reports.
   # Legacy catch-all admin permission. Children list is designed to be
   # backwards-compatible with pre-1.0.0 versions of AdminToolbox.
   admintoolbox.admin:
@@ -49,6 +51,7 @@ permissions:
       - admintoolbox.freeze
       - admintoolbox.yell
       - admintoolbox.broadcast.receive
+      - admintoolbox.reports
   admintoolbox.streamermode:
     description: Can enter and exit Streamer Mode.
   admintoolbox.streamermode.unlimited:
@@ -108,3 +111,10 @@ commands:
     usage: /<command> [duration]
     aliases: [ sm, pausealerts, pa ]
     permission: admintoolbox.streamermode
+  report:
+    description: Send a report to online admins with your location and timestamp.
+    usage: /<command> [reason]
+  reports:
+    description: View and manage open reports.
+    usage: /<command> [page|resolve <id>]
+    permission: admintoolbox.reports
