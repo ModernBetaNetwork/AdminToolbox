@@ -88,7 +88,7 @@ public class ReportManager {
 
 	private void saveReports() {
 		FileConfiguration config = plugin.getReportsConfig();
-		config.set("reports", null); // Clear existing reports
+		config.set("reports", null);
 
 		ConfigurationSection reportsSection = config.createSection("reports");
 
