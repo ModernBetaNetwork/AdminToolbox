@@ -30,6 +30,17 @@ original location, placed back into survival mode, and their original inventory 
 - `/spawn` - Enter admin mode at the current world's spawn point
 - `/spawn <world>` - Enter admin mode at the provided world's spawn point
 
+
+### Report System
+
+- `/report <reason>` — Players send a report with their current location and a timestamp. Admins receive a broadcast where the coordinates are clickable to spectate in admin mode.
+- `/reports [page]` — View open reports (5 per page). Each entry shows player, coords, and world. Hovering shows the reason, time, and the report ID. The coords are clickable to spectate in admin mode, and an inline `[Resolve]` button lets admins resolve the report.
+- `/reports resolve <id>` — Resolve by ID (or click the inline `[Resolve]` button).
+
+Notes:
+- Cooldown: players must wait 5 minutes between `/report` submissions.
+- Permission: `admintoolbox.reports` is required to view/resolve reports.
+
 #### Navigation
 
 - `/back` - Move to previous location in teleport history
@@ -91,6 +102,7 @@ screen sharing or live-streaming gameplay.
 | `admintoolbox.reveal`                 | `/reveal`                     | Reveal while spectating in admin mode                                                                                                               |
 | `admintoolbox.yell`                   | `/yell`                       | Show titles to other players                                                                                                                        |
 | `admintoolbox.freeze`                 | `/freeze`                     | Freeze and unfreeze players                                                                                                                         |
+| `admintoolbox.reports`                | `/reports`                    | View and manage player reports                                                                                                                      |
 | `admintoolbox.spawn`                  | `/spawn`                      | Spectate at current world spawn                                                                                                                     |
 | `admintoolbox.spawn.all`              | `/spawn [world]`              | Spectate at all world spawns                                                                                                                        |
 | `admintoolbox.broadcast.receive`      |                               | Receive alerts about other admins' actions                                                                                                          |
