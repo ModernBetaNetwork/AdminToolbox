@@ -10,6 +10,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.modernbeta.admintoolbox.commands.*;
 import org.modernbeta.admintoolbox.managers.FreezeManager;
+import org.modernbeta.admintoolbox.managers.ReportManager;
 import org.modernbeta.admintoolbox.managers.admin.AdminManager;
 
 import javax.annotation.Nullable;
@@ -24,6 +25,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	AdminManager adminManager;
 	FreezeManager freezeManager;
+	ReportManager reportManager;
 
 	PermissionAudience broadcastAudience;
 
@@ -34,6 +36,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	private FileConfiguration adminStateConfig;
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
+
+	private File reportsConfigFile;
+	private FileConfiguration reportsConfig;
+	private static final String REPORTS_CONFIG_FILENAME = "reports.yml";
 
 	private static final String BROADCAST_AUDIENCE_PERMISSION = "admintoolbox.broadcast.receive";
 	public static final String BROADCAST_EXEMPT_PERMISSION = "admintoolbox.broadcast.exempt";
@@ -47,13 +53,18 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
+		createAdminStateConfig();
+		this.adminStateConfig = getAdminStateConfig();
+
+		createReportsConfig();
+		this.reportsConfig = getReportsConfig();
+
+		this.reportManager = new ReportManager();
+
 		{
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 			if (provider != null) this.luckPermsAPI = provider.getProvider();
 		}
-
-		createAdminStateConfig();
-		this.adminStateConfig = getAdminStateConfig();
 
 		getServer().getPluginManager().registerEvents(adminManager, this);
 		getServer().getPluginManager().registerEvents(freezeManager, this);
@@ -68,6 +79,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("streamermode").setExecutor(new StreamerModeCommand());
+		getCommand("report").setExecutor(new ReportCommand());
+		getCommand("reports").setExecutor(new ReportsCommand());
 
 		initializeConfig();
 
@@ -87,6 +100,41 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		}
 
 		this.adminStateConfig = YamlConfiguration.loadConfiguration(adminStateConfigFile);
+	}
+
+	private void createReportsConfig() {
+		this.reportsConfigFile = new File(getDataFolder(), REPORTS_CONFIG_FILENAME);
+		if (!this.reportsConfigFile.exists()) {
+			this.reportsConfigFile.getParentFile().mkdirs();
+			if (getResource(REPORTS_CONFIG_FILENAME) != null) {
+				saveResource(REPORTS_CONFIG_FILENAME, false);
+			} else {
+				try {
+					this.reportsConfigFile.createNewFile();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		this.reportsConfig = YamlConfiguration.loadConfiguration(reportsConfigFile);
+
+		ConfigurationSection existing = this.reportsConfig.getConfigurationSection("reports");
+		ConfigurationSection fromAdmin = this.adminStateConfig.getConfigurationSection("reports");
+		if ((existing == null || existing.getKeys(false).isEmpty()) && fromAdmin != null) {
+			ConfigurationSection dest = this.reportsConfig.createSection("reports");
+			for (String key : fromAdmin.getKeys(false)) {
+				ConfigurationSection child = fromAdmin.getConfigurationSection(key);
+				if (child != null) {
+					dest.createSection(key, child.getValues(true));
+				}
+			}
+			try {
+				this.reportsConfig.save(reportsConfigFile);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	public FileConfiguration getAdminStateConfig() {
@@ -109,6 +157,23 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		}
 	}
 
+	public FileConfiguration getReportsConfig() {
+		try {
+			this.reportsConfig.load(reportsConfigFile);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return this.reportsConfig;
+	}
+
+	public void saveReportsConfig() {
+		try {
+			this.reportsConfig.save(reportsConfigFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static AdminToolboxPlugin getInstance() {
 		return instance;
 	}
@@ -119,6 +184,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	public FreezeManager getFreezeManager() {
 		return freezeManager;
+	}
+
+	public ReportManager getReportManager() {
+		return reportManager;
 	}
 
 	public PermissionAudience getAdminAudience() {

@@ -55,14 +55,19 @@ public class LocationUtils {
 			.filter((name) -> name.toLowerCase().startsWith(partialNameLower));
 	}
 
-	public static String getShortWorldName(World world) {
-		World defaultWorld = Bukkit.getWorlds().getFirst();
+    public static String getShortWorldName(World world) {
+        World defaultWorld = Bukkit.getWorlds().getFirst();
 
-		if (world.getName().equals(defaultWorld.getName())) return world.getName();
+        if (world == null) {
+            // Fallback: return default world name to avoid NPEs
+            return defaultWorld.getName();
+        }
 
-		// get name without `world_` (+1 accounts for the underscore)
-		return world.getName().substring(defaultWorld.getName().length() + 1);
-	}
+        if (world.getName().equals(defaultWorld.getName())) return world.getName();
+
+        // get name without `world_` (+1 accounts for the underscore)
+        return world.getName().substring(defaultWorld.getName().length() + 1);
+    }
 
 	public static String prettifyCoordinates(Location location) {
 		return String.format(
