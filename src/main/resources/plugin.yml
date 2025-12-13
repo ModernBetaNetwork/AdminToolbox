@@ -26,6 +26,8 @@ permissions:
   admintoolbox.spawn.all:
     description: Can spectate at all world spawns.
     children: [ admintoolbox.spawn ]
+  admintoolbox.fullbright:
+    description: Can enable fullbright preference.
   admintoolbox.reveal:
     description: Can reveal while spectating in admin mode.
   admintoolbox.freeze:
@@ -103,6 +105,11 @@ commands:
     usage: /<command> [world]
     aliases: [ targetspawn ]
     permission: admintoolbox.spawn
+  fullbright:
+    description: Enable a Night Vision preference while spectating.
+    usage: /<command> [on|off]
+    aliases: [ fb, nightvision, nv ]
+    permission: admintoolbox.fullbright
   streamermode:
     description: Enter Streamer Mode, temporarily disabling certain privileges.
     usage: /<command> [duration]

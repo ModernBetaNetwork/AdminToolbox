@@ -67,6 +67,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("unfreeze").setExecutor(new UnfreezeCommand());
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
+		getCommand("fullbright").setExecutor(new FullbrightCommand());
 		if (getLuckPermsAPI().isPresent())
 			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 

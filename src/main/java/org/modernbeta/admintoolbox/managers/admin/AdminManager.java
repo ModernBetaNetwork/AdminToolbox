@@ -123,6 +123,7 @@ public class AdminManager implements Listener {
 					throw new RuntimeException("Could not teleport \"" + player.getName() + "\" back to their original location! This is a bug.");
 				}
 
+				adminState.setFullbrightEnabled(false);
 				player.setGameMode(GameMode.SURVIVAL);
 				player.getInventory().setContents(originalInventory);
 
