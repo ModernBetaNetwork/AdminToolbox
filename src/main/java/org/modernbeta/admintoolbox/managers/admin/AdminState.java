@@ -8,6 +8,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 
 import javax.annotation.Nullable;
@@ -23,6 +25,7 @@ public class AdminState {
 	final UUID playerId;
 
 	Status status = Status.SPECTATING;
+	boolean isFullbrightEnabled = false;
 
 	private TeleportHistory<Location> teleportHistory;
 	private ItemStack[] savedInventory;
@@ -30,7 +33,12 @@ public class AdminState {
 	@Nullable
 	Boolean savedMapVisibility;
 
-	private AdminState(UUID playerId, TeleportHistory<Location> teleportHistory, ItemStack[] inventory, CompletableFuture<Boolean> mapVisibilityFuture) {
+	private AdminState(
+		UUID playerId,
+		TeleportHistory<Location> teleportHistory,
+		ItemStack[] inventory,
+		CompletableFuture<Boolean> mapVisibilityFuture
+	) {
 		this.playerId = playerId;
 		this.teleportHistory = teleportHistory;
 		this.savedInventory = inventory;
@@ -119,6 +127,32 @@ public class AdminState {
 
 	protected void setStatus(Status newStatus) {
 		this.status = newStatus;
+	}
+
+	private static final PotionEffect FULLBRIGHT_EFFECT = new PotionEffect(
+		PotionEffectType.NIGHT_VISION,
+		PotionEffect.INFINITE_DURATION, 255,
+		true, false, false
+	);
+
+	public boolean isFullbrightEnabled() {
+		return this.isFullbrightEnabled;
+	}
+
+	public void setFullbrightEnabled(boolean enabled) {
+		Player player = Bukkit.getPlayer(this.playerId);
+		if (player == null)
+			// TODO: Figure out the correct exception type for this
+			throw new RuntimeException("Trying to toggle fullbright for a player who is offline! How did this happen?");
+
+		player.getScheduler().run(plugin, (task) -> {
+			if (enabled)
+				player.addPotionEffect(FULLBRIGHT_EFFECT);
+			else
+				player.removePotionEffect(FULLBRIGHT_EFFECT.getType());
+		}, null);
+
+		this.isFullbrightEnabled = enabled;
 	}
 
 	ItemStack[] getSavedInventory() {
