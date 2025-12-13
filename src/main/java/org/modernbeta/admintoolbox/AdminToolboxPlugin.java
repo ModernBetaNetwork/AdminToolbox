@@ -47,7 +47,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
-		{
+		if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 			if (provider != null) this.luckPermsAPI = provider.getProvider();
 		}
@@ -67,8 +67,9 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("unfreeze").setExecutor(new UnfreezeCommand());
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
-		getCommand("streamermode").setExecutor(new StreamerModeCommand());
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
+		if (getLuckPermsAPI().isPresent())
+			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 
 		initializeConfig();
 
