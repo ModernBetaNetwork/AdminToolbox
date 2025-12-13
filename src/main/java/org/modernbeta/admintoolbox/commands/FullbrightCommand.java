@@ -47,9 +47,15 @@ public class FullbrightCommand implements CommandExecutor, TabCompleter {
 		else {
 			String input = args[0].toLowerCase();
 
-			if (!(TOGGLE_OPTIONS.contains(input)))
-				// TODO: make this a pretty message instead of an actual exception
-				throw new IllegalArgumentException("Invalid argument! Expected [on|off]");
+			if (!(TOGGLE_OPTIONS.contains(input))) {
+				TextComponent error = Component.text()
+					.color(NamedTextColor.RED)
+					.append(Component.text("Invalid option: " + input + ". "))
+					.append(Component.text("Expected one of: " + String.join(", ", TOGGLE_OPTIONS)))
+					.build();
+				player.sendMessage(error);
+				return true;
+			}
 
 			boolean shouldEnable = input.equals("on");
 			adminState.setFullbrightEnabled(shouldEnable);
