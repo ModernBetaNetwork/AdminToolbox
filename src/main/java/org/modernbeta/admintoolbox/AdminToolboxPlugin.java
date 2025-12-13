@@ -68,6 +68,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("streamermode").setExecutor(new StreamerModeCommand());
+		getCommand("fullbright").setExecutor(new FullbrightCommand());
 
 		initializeConfig();
 
