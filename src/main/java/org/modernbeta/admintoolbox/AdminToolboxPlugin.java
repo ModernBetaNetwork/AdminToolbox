@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -36,7 +37,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
 
-	private BlueMapIntegration blueMapIntegration;
+	private @Nullable BlueMapIntegration blueMapIntegration = null;
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -60,6 +61,12 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		} catch (NoClassDefFoundError e) {
 			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
 			getCommand("streamermode").unregister(getServer().getCommandMap());
+		}
+
+		try {
+			this.blueMapIntegration = new BlueMapIntegration();
+		} catch (NoClassDefFoundError | NoSuchElementException e) {
+			getLogger().warning("BlueMap API not found! Some features will be unavailable.");
 		}
 
 		createAdminStateConfig();
@@ -147,8 +154,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		return Optional.ofNullable(this.luckPermsAPI);
 	}
 
-	public Optional<BlueMapAPI> getBlueMapAPI() {
-		return this.blueMapIntegration.getAPI();
+	public Optional<BlueMapIntegration> getBlueMap() {
+		return Optional.ofNullable(blueMapIntegration);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package org.modernbeta.admintoolbox.managers.admin;
 
-import de.bluecolored.bluemap.api.BlueMapAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -132,9 +131,9 @@ public class AdminManager implements Listener {
 				adminStateConfig.set(player.getUniqueId().toString(), null);
 				plugin.saveAdminStateConfig();
 
-				plugin.getBlueMapAPI().ifPresent((blueMap) -> {
+				plugin.getBlueMap().ifPresent((blueMap) -> {
 					adminState.getSavedMapVisibility().ifPresent((visibility) -> {
-						blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), visibility);
+						blueMap.setPlayerVisibility(player, visibility);
 					});
 				});
 			});
@@ -250,8 +249,8 @@ public class AdminManager implements Listener {
 					case REVEALED -> player.setGameMode(GameMode.SURVIVAL);
 				}
 
-				plugin.getBlueMapAPI().ifPresent((blueMap) -> {
-					blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), false);
+				plugin.getBlueMap().ifPresent((blueMap) -> {
+					blueMap.setPlayerVisibility(player, false);
 				});
 
 				player.sendRichMessage(

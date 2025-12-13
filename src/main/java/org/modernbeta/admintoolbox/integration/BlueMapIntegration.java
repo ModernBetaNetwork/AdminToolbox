@@ -1,11 +1,10 @@
 package org.modernbeta.admintoolbox.integration;
 
 import de.bluecolored.bluemap.api.BlueMapAPI;
+import org.bukkit.entity.Player;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 
 import javax.annotation.Nullable;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 public class BlueMapIntegration {
 	private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
@@ -13,14 +12,16 @@ public class BlueMapIntegration {
 	private @Nullable BlueMapAPI api;
 
 	public BlueMapIntegration() {
-		try {
-			this.api = BlueMapAPI.getInstance().orElseThrow();
-		} catch (NoClassDefFoundError | NoSuchElementException e) {
-			plugin.getLogger().warning("BlueMap API not found! Some features will be unavailable.");
-		}
+		this.api = BlueMapAPI.getInstance().orElseThrow();
 	}
 
-	public Optional<BlueMapAPI> getAPI() {
-		return Optional.ofNullable(api);
+	public void setPlayerVisibility(Player player, boolean visible) {
+		if (api == null) return;
+		api.getWebApp().setPlayerVisibility(player.getUniqueId(), visible);
+	}
+
+	public Boolean getPlayerVisibility(Player player) {
+		if (api == null) return null;
+		return api.getWebApp().getPlayerVisibility(player.getUniqueId());
 	}
 }

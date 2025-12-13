@@ -1,6 +1,5 @@
 package org.modernbeta.admintoolbox.managers.admin;
 
-import de.bluecolored.bluemap.api.BlueMapAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -51,9 +50,9 @@ public class AdminState {
 	static AdminState forPlayer(Player player) {
 		CompletableFuture<Boolean> mapVisibilityFuture = new CompletableFuture<>();
 
-		AdminToolboxPlugin.getInstance().getBlueMapAPI().ifPresent((blueMap) -> {
-			mapVisibilityFuture.complete(blueMap.getWebApp().getPlayerVisibility(player.getUniqueId()));
-			blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), false);
+		AdminToolboxPlugin.getInstance().getBlueMap().ifPresent((blueMap) -> {
+			mapVisibilityFuture.complete(blueMap.getPlayerVisibility(player));
+			blueMap.setPlayerVisibility(player, false);
 		});
 
 
