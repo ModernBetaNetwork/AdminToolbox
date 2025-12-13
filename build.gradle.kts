@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
 	id("java")
 	id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -15,6 +17,7 @@ repositories {
 	maven("https://repo.papermc.io/repository/maven-public/") {
 		name = "papermc"
 	}
+    mavenCentral()
     maven("https://repo.bluecolored.de/releases") {
         name = "bluemap"
     }
@@ -24,6 +27,7 @@ dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 	compileOnly("net.luckperms:api:5.4")
 	implementation("de.bluecolored:bluemap-api:2.7.4")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
 }
 
 tasks.build {
@@ -37,6 +41,11 @@ tasks.processResources {
 	filesMatching("plugin.yml") {
 		expand(props)
 	}
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+    relocate("org.bstats", project.group.toString())
 }
 
 val plugins = runPaper.downloadPluginsSpec {

@@ -1,6 +1,7 @@
 package org.modernbeta.admintoolbox;
 
 import net.luckperms.api.LuckPerms;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,6 +38,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	private static final String BROADCAST_AUDIENCE_PERMISSION = "admintoolbox.broadcast.receive";
 	public static final String BROADCAST_EXEMPT_PERMISSION = "admintoolbox.broadcast.exempt";
+
+	private static final int BSTATS_PLUGIN_ID = 26406;
 
 	@Override
 	public void onEnable() {
@@ -75,6 +78,12 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 
 		initializeConfig();
+
+		if (getConfig().getBoolean("enable-stats")) {
+			getLogger().info("Enabling bStats for plugin statistics.");
+			// bStats - plugin analytics
+			new Metrics(this, BSTATS_PLUGIN_ID);
+		}
 
 		getLogger().info(String.format("Enabled %s", getPluginMeta().getDisplayName()));
 	}
@@ -142,6 +151,9 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	public Configuration getConfigDefaults() {
 		Configuration defaults = new YamlConfiguration();
+
+		defaults.set("enable-stats", true);
+		defaults.setComments("enable-stats", List.of("'false' entirely disables sending statistics via bStats."));
 
 		{
 			ConfigurationSection streamerMode = defaults.createSection("streamer-mode");
