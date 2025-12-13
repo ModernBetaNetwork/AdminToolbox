@@ -20,6 +20,7 @@ import java.util.List;
 public class FullbrightCommand implements CommandExecutor, TabCompleter {
 	private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
 
+	private static final List<String> TOGGLE_OPTIONS = List.of("on", "off");
 	private static final String FULLBRIGHT_COMMAND_PERMISSION = "admintoolbox.fullbright";
 
 	@Override
@@ -41,40 +42,38 @@ public class FullbrightCommand implements CommandExecutor, TabCompleter {
 
 		AdminState adminState = adminManager.getAdminState(player).orElseThrow();
 
-		switch (args.length) {
-			case 0 -> {
-				adminState.setFullbrightEnabled(!adminState.isFullbrightEnabled());
-			}
-			case 1 -> {
-				String value = args[0];
-				boolean shouldEnable;
-				if (value.equalsIgnoreCase("on")) shouldEnable = true;
-				else if (value.equalsIgnoreCase("off")) shouldEnable = false;
-				else throw new IllegalArgumentException("Invalid argument! Expected [on|off]");
-			}
+		if (args.length == 0)
+			adminState.setFullbrightEnabled(!adminState.isFullbrightEnabled());
+		else {
+			String input = args[0].toLowerCase();
+
+			if (!(TOGGLE_OPTIONS.contains(input)))
+				// TODO: make this a pretty message instead of an actual exception
+				throw new IllegalArgumentException("Invalid argument! Expected [on|off]");
+
+			boolean shouldEnable = input.equals("on");
+			adminState.setFullbrightEnabled(shouldEnable);
 		}
 
 		boolean isEnabled = adminState.isFullbrightEnabled();
 
-		TextComponent.Builder feedback = Component.text()
-			.color(NamedTextColor.GOLD);
+		TextComponent statusPart;
 		if (isEnabled) {
-			feedback
-				.append(Component.text("Fullbright has been "))
-				.append(Component.text("enabled", NamedTextColor.GREEN))
-				.append(Component.text("."));
+			statusPart = Component.text("enabled", NamedTextColor.GREEN);
 		} else {
-			feedback
-				.append(Component.text("Fullbright has been "))
-				.append(Component.text("disabled", NamedTextColor.RED))
-				.append(Component.text("."));
+			statusPart = Component.text("disabled", NamedTextColor.RED);
 		}
-		player.sendMessage(feedback.build());
 
+		TextComponent feedback = Component.text()
+			.color(NamedTextColor.GOLD)
+			.append(Component.text("Fullbright is now "))
+			.append(statusPart)
+			.append(Component.text("."))
+			.build();
+
+		player.sendMessage(feedback);
 		return true;
 	}
-
-	private static final List<String> TOGGLE_OPTIONS = List.of("on", "off");
 
 	@Override
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
