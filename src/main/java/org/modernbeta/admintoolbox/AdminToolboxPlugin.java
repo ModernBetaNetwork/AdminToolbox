@@ -47,9 +47,12 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
-		if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+		try {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 			if (provider != null) this.luckPermsAPI = provider.getProvider();
+		} catch (NoClassDefFoundError e) {
+			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
+			getCommand("streamermode").unregister(getServer().getCommandMap());
 		}
 
 		createAdminStateConfig();
@@ -70,10 +73,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
 		if (getLuckPermsAPI().isPresent())
 			getCommand("streamermode").setExecutor(new StreamerModeCommand());
-		else {
-			getLogger().warning("LuckPerms not found! The Streamer Mode feature is disabled.");
-			getCommand("streamermode").unregister(getServer().getCommandMap());
-		}
 
 		initializeConfig();
 
