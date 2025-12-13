@@ -100,6 +100,7 @@ screen sharing or live-streaming gameplay.
 | `admintoolbox.freeze`                 | `/freeze`                     | Freeze and unfreeze players                                                                                                                         |
 | `admintoolbox.spawn`                  | `/spawn`                      | Spectate at current world spawn                                                                                                                     |
 | `admintoolbox.spawn.all`              | `/spawn [world]`              | Spectate at all world spawns                                                                                                                        |
+| `admintoolbox.fullbright`             | `/fullbright`, `/nightvision` | Apply Night Vision during an active admin session                                                                                                   |
 | `admintoolbox.broadcast.receive`      |                               | Receive alerts about other admins' actions                                                                                                          |
 | `admintoolbox.broadcast.exempt`       |                               | Admin actions will not alert others who can receive them                                                                                            |
 | `admintoolbox.admin`                  |                               | Access to core AdminToolbox features. (**Deprecated**: Only for backward compatibility. This permission will be removed in the next major version.) |
@@ -112,4 +113,5 @@ screen sharing or live-streaming gameplay.
   On servers with BlueMap, the plugin will hide admins who are [revealed](#reveal) from the map.
 
 [folia]: https://papermc.io/software/folia
+
 [color codes]: https://minecraft.wiki/w/Formatting_codes
