@@ -70,6 +70,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
 		if (getLuckPermsAPI().isPresent())
 			getCommand("streamermode").setExecutor(new StreamerModeCommand());
+		else {
+			getLogger().warning("LuckPerms not found! The Streamer Mode feature is disabled.");
+			getCommand("streamermode").unregister(getServer().getCommandMap());
+		}
 
 		initializeConfig();
 
