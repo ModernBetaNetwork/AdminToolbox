@@ -132,7 +132,7 @@ public class AdminManager implements Listener {
 				adminStateConfig.set(player.getUniqueId().toString(), null);
 				plugin.saveAdminStateConfig();
 
-				BlueMapAPI.getInstance().ifPresent((blueMap) -> {
+				plugin.getBlueMapAPI().ifPresent((blueMap) -> {
 					adminState.getSavedMapVisibility().ifPresent((visibility) -> {
 						blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), visibility);
 					});
@@ -250,7 +250,7 @@ public class AdminManager implements Listener {
 					case REVEALED -> player.setGameMode(GameMode.SURVIVAL);
 				}
 
-				BlueMapAPI.getInstance().ifPresent((blueMap) -> {
+				plugin.getBlueMapAPI().ifPresent((blueMap) -> {
 					blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), false);
 				});
 

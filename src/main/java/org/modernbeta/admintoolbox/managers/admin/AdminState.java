@@ -51,7 +51,7 @@ public class AdminState {
 	static AdminState forPlayer(Player player) {
 		CompletableFuture<Boolean> mapVisibilityFuture = new CompletableFuture<>();
 
-		BlueMapAPI.getInstance().ifPresent((blueMap) -> {
+		AdminToolboxPlugin.getInstance().getBlueMapAPI().ifPresent((blueMap) -> {
 			mapVisibilityFuture.complete(blueMap.getWebApp().getPlayerVisibility(player.getUniqueId()));
 			blueMap.getWebApp().setPlayerVisibility(player.getUniqueId(), false);
 		});

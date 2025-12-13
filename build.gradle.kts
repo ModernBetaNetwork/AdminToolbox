@@ -26,8 +26,8 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("net.luckperms:api:5.4")
+    compileOnly("de.bluecolored:bluemap-api:2.7.4")
     implementation("org.bstats:bstats-bukkit:3.1.0")
-    implementation("de.bluecolored:bluemap-api:2.7.4")
 }
 
 tasks.build {

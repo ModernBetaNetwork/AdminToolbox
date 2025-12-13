@@ -1,5 +1,6 @@
 package org.modernbeta.admintoolbox;
 
+import de.bluecolored.bluemap.api.BlueMapAPI;
 import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.modernbeta.admintoolbox.commands.*;
+import org.modernbeta.admintoolbox.integration.BlueMapIntegration;
 import org.modernbeta.admintoolbox.managers.FreezeManager;
 import org.modernbeta.admintoolbox.managers.admin.AdminManager;
 
@@ -33,6 +35,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
+
+	private BlueMapIntegration blueMapIntegration;
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -141,6 +145,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	public Optional<LuckPerms> getLuckPermsAPI() {
 		return Optional.ofNullable(this.luckPermsAPI);
+	}
+
+	public Optional<BlueMapAPI> getBlueMapAPI() {
+		return this.blueMapIntegration.getAPI();
 	}
 
 	@Override
