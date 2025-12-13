@@ -37,6 +37,8 @@ original location, placed back into survival mode, and their original inventory 
 
 #### Fullbright
 
+`/fullbright`, `/nightvision`
+
 - `/fullbright` - Toggle fullbright for the current admin session
 - `/fullbright <on|off>` - Enable or disable fullbright for the current admin session
 
