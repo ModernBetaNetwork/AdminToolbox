@@ -55,20 +55,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
-		try {
-			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-			if (provider != null) this.luckPermsAPI = provider.getProvider();
-		} catch (NoClassDefFoundError e) {
-			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
-			getCommand("streamermode").unregister(getServer().getCommandMap());
-		}
-
-		try {
-			this.blueMapIntegration = new BlueMapIntegration();
-		} catch (NoClassDefFoundError | NoSuchElementException e) {
-			getLogger().warning("BlueMap API not found! Some features will be unavailable.");
-		}
-
 		createAdminStateConfig();
 		this.adminStateConfig = getAdminStateConfig();
 
@@ -89,6 +75,20 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 
 		initializeConfig();
+
+		try {
+			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+			if (provider != null) this.luckPermsAPI = provider.getProvider();
+		} catch (NoClassDefFoundError e) {
+			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
+			getCommand("streamermode").unregister(getServer().getCommandMap());
+		}
+
+		try {
+			this.blueMapIntegration = new BlueMapIntegration();
+		} catch (NoClassDefFoundError | NoSuchElementException e) {
+			getLogger().warning("BlueMap API not found! Some features will be unavailable.");
+		}
 
 		if (getConfig().getBoolean("enable-stats")) {
 			getLogger().info("Enabling bStats for plugin statistics.");
