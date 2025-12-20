@@ -109,6 +109,8 @@ screen sharing or live-streaming gameplay.
 
 ## Telemetry
 
+**New in version 1.4.0.**
+
 For us to better understand how many servers are using AdminToolbox, by default we collect anonymized analytics via
 bStats. Server administrators can disable this functionality by setting `enable-stats: false` in the configuration file.
 
@@ -119,6 +121,8 @@ The collected data is viewable publicly at https://bstats.org/plugin/bukkit/Admi
 - **[LuckPerms](https://luckperms.net/)**
     - Required for [Streamer Mode](#streamer-mode).
     - Adds a custom context for conditionally applying permissions based on admin state.
+
+      **New in version 1.4.0.**
         - **`admintoolbox:state`** can be any of `spectating`, `revealed`, or `normal` (not in admin mode).
 - **[BlueMap](https://bluemap.bluecolored.de)**
     - The plugin will hide admins who are [revealed](#reveal) from the map.
