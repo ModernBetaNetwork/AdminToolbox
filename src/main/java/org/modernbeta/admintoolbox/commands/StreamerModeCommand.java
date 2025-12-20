@@ -46,11 +46,11 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 				Placeholder.unparsed("addendum", player.isOp() ? " (streamer-mode -> allow is 'false' in config.yml)" : ""));
 			return true;
 		}
-		if (plugin.getLuckPermsAPI().isEmpty()) {
+		if (plugin.getLuckPerms().isEmpty()) {
 			sender.sendRichMessage("<red>LuckPerms is required to use Streamer Mode. Is it enabled?");
 			return true;
 		}
-		LuckPerms luckPerms = plugin.getLuckPermsAPI().get();
+		LuckPerms luckPerms = plugin.getLuckPerms().get().api();
 
 		List<String> disablePermissions = plugin.getConfig().getStringList("streamer-mode.disable-permissions");
 		User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
@@ -125,7 +125,7 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		if (args.length != 1) return List.of();
-		if (plugin.getLuckPermsAPI().isEmpty()) return List.of();
+		if (plugin.getLuckPerms().isEmpty()) return List.of();
 		if (!(sender instanceof Player)) return List.of();
 
 		String partialEntry = args[0];

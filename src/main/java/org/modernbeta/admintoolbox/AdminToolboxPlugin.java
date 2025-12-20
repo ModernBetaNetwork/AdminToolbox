@@ -1,10 +1,8 @@
 package org.modernbeta.admintoolbox;
 
-import de.bluecolored.bluemap.api.BlueMapAPI;
 import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +11,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.modernbeta.admintoolbox.commands.*;
 import org.modernbeta.admintoolbox.integration.BlueMapIntegration;
+import org.modernbeta.admintoolbox.integration.luckperms.LuckPermsIntegration;
 import org.modernbeta.admintoolbox.managers.FreezeManager;
 import org.modernbeta.admintoolbox.managers.admin.AdminManager;
 
@@ -32,13 +31,11 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	PermissionAudience broadcastAudience;
 
-	@Nullable
-	private LuckPerms luckPermsAPI;
-
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
 
 	private @Nullable BlueMapIntegration blueMapIntegration = null;
+	private @Nullable LuckPermsIntegration luckPermsIntegration = null;
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -77,8 +74,11 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		try {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-			if (provider != null) this.luckPermsAPI = provider.getProvider();
-			getCommand("streamermode").setExecutor(new StreamerModeCommand());
+			if (provider != null) {
+				this.luckPermsIntegration = new LuckPermsIntegration(provider.getProvider());
+
+				getCommand("streamermode").setExecutor(new StreamerModeCommand());
+			}
 		} catch (NoClassDefFoundError e) {
 			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
 			getCommand("streamermode").unregister(getServer().getCommandMap());
@@ -150,8 +150,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		return broadcastAudience;
 	}
 
-	public Optional<LuckPerms> getLuckPermsAPI() {
-		return Optional.ofNullable(this.luckPermsAPI);
+	public Optional<LuckPermsIntegration> getLuckPerms() {
+		return Optional.ofNullable(this.luckPermsIntegration);
 	}
 
 	public Optional<BlueMapIntegration> getBlueMap() {
