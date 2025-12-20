@@ -81,12 +81,12 @@ To unfreeze a player, use `/unfreeze <player>`
 
 ### Streamer Mode
 
+**Requires [LuckPerms](#integrations).**
+
 `/streamermode <duration>`, `/pausealerts <duration>`
 
 Allows players to temporarily disable certain permissions (i.e. those that give them staff-only alerts), intended for
 screen sharing or live-streaming gameplay.
-
-**New in version 1.2.0.**
 
 ## Permissions
 
@@ -108,8 +108,12 @@ screen sharing or live-streaming gameplay.
 
 ## Integrations
 
-- **[BlueMap](https://bluemap.bluecolored.de):**
-  On servers with BlueMap, the plugin will hide admins who are [revealed](#reveal) from the map.
+- **[LuckPerms](https://luckperms.net/)**
+    - Required for [Streamer Mode](#streamer-mode).
+    - Adds a custom context for conditionally applying permissions based on admin state.
+        - **`admintoolbox:state`** can be any of `spectating`, `revealed`, or `normal` (not in admin mode).
+- **[BlueMap](https://bluemap.bluecolored.de)**
+    - The plugin will hide admins who are [revealed](#reveal) from the map.
 
 [folia]: https://papermc.io/software/folia
 
