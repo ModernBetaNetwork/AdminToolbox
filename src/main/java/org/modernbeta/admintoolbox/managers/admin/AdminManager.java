@@ -59,6 +59,10 @@ public class AdminManager implements Listener {
 			state.setStatus(SPECTATING);
 			adminStates.put(player.getUniqueId(), state);
 
+			plugin.getLuckPerms().ifPresent(lp -> {
+				lp.signalContextUpdate(player);
+			});
+
 			Component actionBarMessage = MiniMessage.miniMessage().deserialize("<gold>Teleporting...");
 			player.sendActionBar(actionBarMessage);
 
@@ -101,6 +105,10 @@ public class AdminManager implements Listener {
 
 				player.setGameMode(GameMode.SURVIVAL);
 				adminStates.get(uuid).setStatus(REVEALED);
+
+				plugin.getLuckPerms().ifPresent(lp -> {
+					lp.signalContextUpdate(player);
+				});
 			});
 		});
 	}
@@ -135,6 +143,10 @@ public class AdminManager implements Listener {
 					adminState.getSavedMapVisibility().ifPresent((visibility) -> {
 						blueMap.setPlayerVisibility(player, visibility);
 					});
+				});
+
+				plugin.getLuckPerms().ifPresent(lp -> {
+					lp.signalContextUpdate(player);
 				});
 			});
 		}, () -> {

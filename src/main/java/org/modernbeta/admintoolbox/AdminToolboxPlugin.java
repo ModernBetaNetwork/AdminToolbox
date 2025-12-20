@@ -76,6 +76,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 			if (provider != null) {
 				this.luckPermsIntegration = new LuckPermsIntegration(provider.getProvider());
+				this.luckPermsIntegration.registerCalculator();
 
 				getCommand("streamermode").setExecutor(new StreamerModeCommand());
 			}
@@ -101,6 +102,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		this.getLuckPerms().ifPresent(LuckPermsIntegration::unregisterCalculator);
+
 		getLogger().info(String.format("Disabled %s", getPluginMeta().getDisplayName()));
 	}
 
