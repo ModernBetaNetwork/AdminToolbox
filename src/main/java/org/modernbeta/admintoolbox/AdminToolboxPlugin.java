@@ -4,6 +4,7 @@ import de.bluecolored.bluemap.api.BlueMapAPI;
 import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,14 +72,13 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("yell").setExecutor(new YellCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
-		if (getLuckPermsAPI().isPresent())
-			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 
 		initializeConfig();
 
 		try {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 			if (provider != null) this.luckPermsAPI = provider.getProvider();
+			getCommand("streamermode").setExecutor(new StreamerModeCommand());
 		} catch (NoClassDefFoundError e) {
 			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
 			getCommand("streamermode").unregister(getServer().getCommandMap());
