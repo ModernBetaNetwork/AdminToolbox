@@ -46,7 +46,8 @@ original location, placed back into survival mode, and their original inventory 
 
 `/reveal`, `/show`
 
-While in admin mode, running this command places the admin into survival mode at their current location. This makes the admin visible to players during confrontations while maintaining:
+While in admin mode, running this command places the admin into survival mode at their current location. This makes the
+admin visible to players during confrontations while maintaining:
 
 - Empty inventory
 - Immunity to damage
@@ -90,21 +91,21 @@ screen sharing or live-streaming gameplay.
 
 ## Permissions
 
-| Permission                            | Command                       | Description                                                                                                                                         |
-|---------------------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `admintoolbox.target`                 | `/admin`, `/target`           | Spectate at current location                                                                                                                        |
-| `admintoolbox.target.player`          | `/target <player>`            | Spectate at a player's location                                                                                                                     |
-| `admintoolbox.target.location`        | `/target <x> [y] <z> [world]` | Spectate at provided coordinates                                                                                                                    |
-| `admintoolbox.reveal`                 | `/reveal`                     | Reveal while spectating in admin mode                                                                                                               |
-| `admintoolbox.yell`                   | `/yell`                       | Show titles to other players                                                                                                                        |
-| `admintoolbox.freeze`                 | `/freeze`                     | Freeze and unfreeze players                                                                                                                         |
-| `admintoolbox.spawn`                  | `/spawn`                      | Spectate at current world spawn                                                                                                                     |
-| `admintoolbox.spawn.all`              | `/spawn [world]`              | Spectate at all world spawns                                                                                                                        |
-| `admintoolbox.fullbright`             | `/fullbright`, `/nightvision` | Apply Night Vision during an active admin session                                                                                                   |
-| `admintoolbox.broadcast.receive`      |                               | Receive alerts about other admins' actions                                                                                                          |
-| `admintoolbox.broadcast.exempt`       |                               | Admin actions will not alert others who can receive them                                                                                            |
-| `admintoolbox.streamermode`           | `/streamermode`               | Enter/exit Streamer Mode, revoking certain permissions.                                                                                             |
-| `admintoolbox.streamermode.unlimited` |                               | Bypass the maximum Streamer Mode duration set in config.yml.                                                                                        |
+| Permission                            | Command                       | Description                                                  |
+|---------------------------------------|-------------------------------|--------------------------------------------------------------|
+| `admintoolbox.target`                 | `/admin`, `/target`           | Spectate at current location                                 |
+| `admintoolbox.target.player`          | `/target <player>`            | Spectate at a player's location                              |
+| `admintoolbox.target.location`        | `/target <x> [y] <z> [world]` | Spectate at provided coordinates                             |
+| `admintoolbox.reveal`                 | `/reveal`                     | Reveal while spectating in admin mode                        |
+| `admintoolbox.yell`                   | `/yell`                       | Show titles to other players                                 |
+| `admintoolbox.freeze`                 | `/freeze`                     | Freeze and unfreeze players                                  |
+| `admintoolbox.spawn`                  | `/spawn`                      | Spectate at current world spawn                              |
+| `admintoolbox.spawn.all`              | `/spawn [world]`              | Spectate at all world spawns                                 |
+| `admintoolbox.fullbright`             | `/fullbright`, `/nightvision` | Apply Night Vision during an active admin session            |
+| `admintoolbox.broadcast.receive`      |                               | Receive alerts about other admins' actions                   |
+| `admintoolbox.broadcast.exempt`       |                               | Admin actions will not alert others who can receive them     |
+| `admintoolbox.streamermode`           | `/streamermode`               | Enter/exit Streamer Mode, revoking certain permissions.      |
+| `admintoolbox.streamermode.unlimited` |                               | Bypass the maximum Streamer Mode duration set in config.yml. |
 
 ## Integrations
 
