@@ -111,9 +111,7 @@ screen sharing or live-streaming gameplay.
 
 - **[LuckPerms](https://luckperms.net/)**
     - Required for [Streamer Mode](#streamer-mode).
-    - Adds a custom context for conditionally applying permissions based on admin state.
-
-      **New in version 1.4.0.**
+    - **New in version 1.4.0:** Custom context for conditionally applying permissions based on admin state.
         - **`admintoolbox:state`** can be any of `spectating`, `revealed`, or `normal` (not in admin mode).
 - **[BlueMap](https://bluemap.bluecolored.de)**
     - The plugin will hide admins who are [revealed](#reveal) from the map.
