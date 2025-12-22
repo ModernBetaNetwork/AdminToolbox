@@ -82,7 +82,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			}
 		} catch (NoClassDefFoundError e) {
 			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
-			getCommand("streamermode").unregister(getServer().getCommandMap());
+
+			// unregistering the command didn't always seem to work, this is more robust
+			getCommand("streamermode")
+				.setExecutor(UnavailableCommand.error("LuckPerms is required for this feature."));
 		}
 
 		try {
