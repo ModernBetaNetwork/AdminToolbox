@@ -35,13 +35,6 @@ original location, placed back into survival mode, and their original inventory 
 - `/back` - Move to previous location in teleport history
 - `/forward` - Move to next location in teleport history
 
-#### Fullbright
-
-`/fullbright`, `/nightvision`
-
-- `/fullbright` - Toggle fullbright for the current admin session
-- `/fullbright <on|off>` - Enable or disable fullbright for the current admin session
-
 ### Reveal
 
 `/reveal`, `/show`
@@ -52,6 +45,13 @@ admin visible to players during confrontations while maintaining:
 - Empty inventory
 - Immunity to damage
 - No mob targeting
+
+#### Fullbright
+
+`/fullbright`, `/nightvision`
+
+- `/fullbright` - Toggle fullbright for the current admin session
+- `/fullbright <on|off>` - Enable or disable fullbright for the current admin session
 
 ### Yell
 
