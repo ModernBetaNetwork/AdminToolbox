@@ -96,7 +96,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 					CompletableFuture<Location> highestLocationFuture = getHighestLocation(player.getWorld(), x, z);
 					highestLocationFuture.thenAccept((highestLocation) -> {
 						targetLabel.set(prettifyCoordinates(highestLocation));
-						targetLocationFuture.complete(highestLocation);
+						targetLocationFuture.complete(highestLocation.toCenterLocation());
 					}).exceptionally(ex -> {
 						targetLocationFuture.completeExceptionally(
 							new IllegalArgumentException(
@@ -125,7 +125,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 						player.getYaw(), player.getPitch()
 					);
 					targetLabel.set(prettifyCoordinates(targetLocation));
-					targetLocationFuture.complete(targetLocation);
+					targetLocationFuture.complete(targetLocation.toCenterLocation());
 				} catch (NumberFormatException e) {
 					// try getting highest x/z at provided world if we couldn't parse all the coords
 					try {
@@ -143,7 +143,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 						CompletableFuture<Location> highestLocationFuture = getHighestLocation(world, x, z);
 						highestLocationFuture.thenAccept((highestLocation) -> {
 							targetLabel.set(prettifyCoordinates(highestLocation));
-							targetLocationFuture.complete(highestLocation);
+							targetLocationFuture.complete(highestLocation.toCenterLocation());
 						}).exceptionally(ex -> {
 							targetLocationFuture.completeExceptionally(
 								new IllegalArgumentException(
@@ -180,7 +180,7 @@ public class TargetCommand implements CommandExecutor, TabCompleter {
 
 					Location targetLocation = new Location(world, x, y, z);
 					targetLabel.set(prettifyCoordinates(targetLocation));
-					targetLocationFuture.complete(targetLocation);
+					targetLocationFuture.complete(targetLocation.toCenterLocation());
 				} catch (Exception e) {
 					targetLocationFuture.completeExceptionally(e);
 				}
