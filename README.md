@@ -91,21 +91,21 @@ screen sharing or live-streaming gameplay.
 
 ## Permissions
 
-| Permission                            | Command                       | Description                                                  |
-|---------------------------------------|-------------------------------|--------------------------------------------------------------|
-| `admintoolbox.target`                 | `/admin`, `/target`           | Spectate at current location                                 |
-| `admintoolbox.target.player`          | `/target <player>`            | Spectate at a player's location                              |
-| `admintoolbox.target.location`        | `/target <x> [y] <z> [world]` | Spectate at provided coordinates                             |
-| `admintoolbox.reveal`                 | `/reveal`                     | Reveal while spectating in admin mode                        |
-| `admintoolbox.yell`                   | `/yell`                       | Show titles to other players                                 |
-| `admintoolbox.freeze`                 | `/freeze`                     | Freeze and unfreeze players                                  |
-| `admintoolbox.spawn`                  | `/spawn`                      | Spectate at current world spawn                              |
-| `admintoolbox.spawn.all`              | `/spawn [world]`              | Spectate at all world spawns                                 |
-| `admintoolbox.fullbright`             | `/fullbright`, `/nightvision` | Apply Night Vision during an active admin session            |
-| `admintoolbox.broadcast.receive`      |                               | Receive alerts about other admins' actions                   |
-| `admintoolbox.broadcast.exempt`       |                               | Admin actions will not alert others who can receive them     |
-| `admintoolbox.streamermode`           | `/streamermode`               | Enter/exit Streamer Mode, revoking certain permissions.      |
-| `admintoolbox.streamermode.unlimited` |                               | Bypass the maximum Streamer Mode duration set in config.yml. |
+| Permission                            | Description                                                                                       |
+|---------------------------------------|---------------------------------------------------------------------------------------------------|
+| `admintoolbox.target`                 | Use [`/target`](#target-locations) at current location                                            |
+| `admintoolbox.target.player`          | Use [`/target <player>`](#target-locations)                                                       |
+| `admintoolbox.target.location`        | Use [`/target <x> [y] <z> [world]`](#target-locations)                                            |
+| `admintoolbox.reveal`                 | Use [`/reveal`](#reveal)                                                                          |
+| `admintoolbox.yell`                   | Use [`/yell`](#yell)                                                                              |
+| `admintoolbox.freeze`                 | Use [`/freeze` and `/unfreeze`](#freeze)                                                          |
+| `admintoolbox.spawn`                  | Use [`/spawn`](#targeting-spawn) in current world                                                 |
+| `admintoolbox.spawn.all`              | Use [`/spawn [world]`](#targeting-spawn)                                                          |
+| `admintoolbox.fullbright`             | Use [`/fullbright`](#fullbright) while in admin mode                                              |
+| `admintoolbox.broadcast.receive`      | Receive alerts about others' [targets](#spectate), [yells](#yell), and [freeze](#freeze) actions. |
+| `admintoolbox.broadcast.exempt`       | Do not send alerts to players with `admintoolbox.broadcast.receive`                               |
+| `admintoolbox.streamermode`           | Use [streamer mode](#streamer-mode)                                                               |
+| `admintoolbox.streamermode.unlimited` | Bypass maximum streamer mode duration. (Set in config.yml)                                        |
 
 ## Integrations
 
