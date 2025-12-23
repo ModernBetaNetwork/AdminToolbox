@@ -1,6 +1,7 @@
 package org.modernbeta.admintoolbox.managers.admin;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 import org.modernbeta.admintoolbox.managers.admin.AdminState.TeleportHistory;
+import org.modernbeta.admintoolbox.utils.LocationUtils;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -281,9 +283,34 @@ public class AdminManager implements Listener {
 		Player player = teleportEvent.getPlayer();
 		if (!isActiveAdmin(player)) return;
 		if (teleportEvent.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) return;
-		if (player.hasPermission(TARGET_PLAYER_PERMISSION))
-			// allow if admin can spectate players directly, allow it
+		if (player.hasPermission(TARGET_PLAYER_PERMISSION)) {
+			// allow if admin can spectate players directly, broadcast and allow it
+			Location dest = teleportEvent.getTo();
+
+			Bukkit.getRegionScheduler().run(plugin, dest, (task) -> {
+				dest.getNearbyPlayers(0.5).stream()
+					.filter((nearbyPlayer) -> !nearbyPlayer.getUniqueId().equals(player.getUniqueId()))
+					.findFirst()
+					.ifPresentOrElse((target) -> {
+						plugin.getAdminAudience().sendMessage(Component.text()
+							.color(NamedTextColor.GOLD)
+							.append(Component.text(player.getName()))
+							.append(Component.text(" is spectating at "))
+							.append(Component.text(target.getName()))
+							.build());
+					}, () -> {
+						plugin.getAdminAudience().sendMessage(Component.text()
+							.color(NamedTextColor.GOLD)
+							.append(Component.text(player.getName()))
+							.append(Component.text(" is spectating at "))
+							.append(Component.text(
+								LocationUtils.prettifyCoordinates(teleportEvent.getTo()))
+							)
+							.build());
+					});
+			});
 			return;
+		}
 
 		player.sendRichMessage("<red>You don't have permission to spectate players");
 		teleportEvent.setCancelled(true);
