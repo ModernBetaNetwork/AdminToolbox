@@ -277,6 +277,10 @@ public class AdminManager implements Listener {
 	/**
 	 * Prevent players in admin mode from using the spectator teleport menu unless they have
 	 * permission to teleport to players directly.
+	 *
+	 * <p>
+	 * <strong>PlayerTeleportEvent does not fire on Folia servers.</strong>
+	 * See <a href="https://github.com/PaperMC/Folia/issues/105#issuecomment-1610418720">PaperMC/Folia#105</a>
 	 */
 	@EventHandler
 	void onAdminTeleport(PlayerTeleportEvent teleportEvent) {
