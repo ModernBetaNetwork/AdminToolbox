@@ -43,7 +43,13 @@ tasks.processResources {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.jar {
+    enabled = false
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+
     configurations = listOf(project.configurations.runtimeClasspath.get())
     relocate("org.bstats", project.group.toString())
 }
