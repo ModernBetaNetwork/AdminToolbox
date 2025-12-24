@@ -94,11 +94,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			getLogger().warning("BlueMap API not found! Some features will be unavailable.");
 		}
 
-		if (getConfig().getBoolean("enable-stats")) {
-			getLogger().info("Enabling bStats for plugin statistics.");
-			// bStats - plugin analytics
-			new Metrics(this, BSTATS_PLUGIN_ID);
-		}
+		// bStats - plugin analytics. Toggleable in server-level bStats config.
+		new Metrics(this, BSTATS_PLUGIN_ID);
 
 		getLogger().info(String.format("Enabled %s", getPluginMeta().getDisplayName()));
 	}
@@ -173,9 +170,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public Configuration getConfigDefaults() {
 		Configuration defaults = new YamlConfiguration();
 
-		defaults.set("enable-stats", true);
-		defaults.setComments("enable-stats", List.of("'false' entirely disables sending statistics via bStats."));
-
 		{
 			ConfigurationSection streamerMode = defaults.createSection("streamer-mode");
 			streamerMode.set("allow", true);
@@ -197,6 +191,11 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		config.setDefaults(defaults);
 		config.options().copyDefaults(true);
+
+		// Remove `enable-stats` option, it's toggleable at the server level.
+		if (config.isSet("enable-stats")) {
+			getConfig().set("enable-stats", null);
+		}
 
 		saveConfig();
 		reloadConfig();
