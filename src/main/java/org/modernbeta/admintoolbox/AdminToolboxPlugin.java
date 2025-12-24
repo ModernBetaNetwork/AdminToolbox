@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.modernbeta.admintoolbox.commands.*;
 import org.modernbeta.admintoolbox.integration.BlueMapIntegration;
 import org.modernbeta.admintoolbox.integration.luckperms.LuckPermsIntegration;
+import org.modernbeta.admintoolbox.integration.placeholderapi.PlaceholderAPIIntegration;
 import org.modernbeta.admintoolbox.managers.FreezeManager;
 import org.modernbeta.admintoolbox.managers.admin.AdminManager;
 
@@ -36,6 +37,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	private @Nullable BlueMapIntegration blueMapIntegration = null;
 	private @Nullable LuckPermsIntegration luckPermsIntegration = null;
+	private @Nullable PlaceholderAPIIntegration placeholderAPIIntegration = null;
 
 	private static final String ADMIN_STATE_CONFIG_FILENAME = "admin-state.yml";
 
@@ -92,6 +94,13 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			this.blueMapIntegration = new BlueMapIntegration();
 		} catch (NoClassDefFoundError | NoSuchElementException e) {
 			getLogger().warning("BlueMap API not found! Some features will be unavailable.");
+		}
+
+		try {
+			this.placeholderAPIIntegration = new PlaceholderAPIIntegration(this);
+			this.placeholderAPIIntegration.registerPlaceholders();
+		} catch (NoClassDefFoundError e) {
+			getLogger().warning("PlaceholderAPI is not available! Some features will be unavailable.");
 		}
 
 		// bStats - plugin analytics. Toggleable in server-level bStats config.

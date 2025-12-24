@@ -65,12 +65,16 @@ repositories {
     maven("https://repo.bluecolored.de/releases") {
         name = "bluemap"
     }
+    maven("https://repo.extendedclip.com/releases/") {
+        name = "clip"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("de.bluecolored:bluemap-api:2.7.4")
+    compileOnly("me.clip:placeholderapi:2.11.7")
     implementation("org.bstats:bstats-bukkit:3.1.0")
 }
 
