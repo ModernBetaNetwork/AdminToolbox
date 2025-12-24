@@ -12,7 +12,6 @@ const BASE_RAW_URL =
     // trailing slash is important!
     // otherwise, URL constructor treats `main` as a file, not a directory path
     "https://raw.githubusercontent.com/ModernBetaNetwork/AdminToolbox/refs/heads/main/";
-const RELATIVE_PATH_PREFIX = "./";
 
 const readme = Bun.file("README.md");
 const modrinthReadme = Bun.file("README-modrinth.md");
@@ -23,7 +22,7 @@ text = text.replace(/^(# .+\n+)/, "");
 
 // replace all repo images with GitHub raw url
 text = text.replaceAll(/!\[(.*?)\]\((.*?)\)/g, (_, alt, url) => {
-    if (url.startsWith(RELATIVE_PATH_PREFIX)) {
+    if (url.startsWith("./")) {
         return `![${alt}](${new URL(url, BASE_RAW_URL).href})`;
     }
     return `![${alt}](${url})`;
