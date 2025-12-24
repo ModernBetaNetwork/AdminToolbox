@@ -7,7 +7,51 @@ plugins {
 }
 
 group = "org.modernbeta.admintoolbox"
-version = "1.4.1"
+
+val baseVersion = "1.4.1"
+version = run {
+    // CI: on release tag - use that version
+    val refType = System.getenv("GITHUB_REF_TYPE")
+    val ref = System.getenv("GITHUB_REF")
+    if (refType == "tag" && ref?.startsWith("refs/tags/v") == true) {
+        return@run ref.removePrefix("refs/tags/v")
+    }
+
+    // git: get latest commit hash
+    val gitHash = runCatching {
+        ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+            .redirectErrorStream(true)
+            .start()
+            .let { proc ->
+                proc.inputStream.bufferedReader().readText().trim()
+                    .takeIf { proc.waitFor() == 0 && it.matches(Regex("[a-f0-9]+")) }
+            }
+    }.getOrNull()
+
+    // git: not in repository, use "-dev"
+    if (gitHash == null) {
+        return@run "$baseVersion-dev"
+    }
+
+    // CI: use commit hash, working tree is always clean
+    if (System.getenv("CI") != null) {
+        return@run "$baseVersion+$gitHash"
+    }
+
+    // local: if working tree is clean, use hash, else use "-dev"
+    val isClean = runCatching {
+        ProcessBuilder("git", "status", "--porcelain")
+            .redirectErrorStream(true)
+            .start()
+            .let { proc ->
+                val output = proc.inputStream.bufferedReader().readText()
+                proc.waitFor() == 0 && output.isBlank()
+            }
+    }.getOrDefault(false)
+
+    if (isClean) "$baseVersion+$gitHash"
+    else "$baseVersion-dev"
+}
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
