@@ -123,7 +123,8 @@ use when screen sharing or live-streaming gameplay.
 **Added in version 1.4.0.**
 
 For us to better understand how many servers are using AdminToolbox, by default we collect anonymized analytics via
-bStats. Server administrators can disable this functionality by setting `enable-stats: false` in config.yml.
+bStats. Server administrators can disable this functionality on their servers by setting `enabled: false` in
+`plugins/bStats/config.yml`.
 
 The anonymized collected data is viewable publicly at https://bstats.org/plugin/bukkit/AdminToolbox/26406.
 
