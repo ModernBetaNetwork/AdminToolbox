@@ -287,3 +287,8 @@ Temporary Items
 .idea/
 
 /run/
+
+node_modules/
+package.json
+bun.lock
+README-modrinth.md
