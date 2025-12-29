@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 public class StreamerModePlaceholder extends PlaceholderExpansion implements Relational {
 	private final AdminToolboxPlugin plugin;
 
-	private static final String SM_VIEW_PERMISSION = "admintoolbox.streamermode.view";
-	private static final String SM_WEAR_PERMISSION = "admintoolbox.streamermode.wear";
+	private static final String SM_VIEW_PERMISSION = "admintoolbox.streamermode.placeholder.view";
+	private static final String SM_WEAR_PERMISSION = "admintoolbox.streamermode.placeholder.wear";
 
 	public StreamerModePlaceholder(AdminToolboxPlugin plugin) {
 		this.plugin = plugin;
@@ -42,14 +42,22 @@ public class StreamerModePlaceholder extends PlaceholderExpansion implements Rel
 	}
 
 	@Override
-	public @Nullable String onPlaceholderRequest(Player viewer, Player wearer, String identifier) {
-		if (viewer == null || wearer == null) return null;
-		if (!viewer.hasPermission(SM_VIEW_PERMISSION)) return null;
-		if (!wearer.hasPermission(SM_WEAR_PERMISSION)) return null;
+	public String onPlaceholderRequest(Player viewer, Player wearer, String identifier) {
+		if (viewer == null || wearer == null) return "";
+		if (!viewer.hasPermission(SM_VIEW_PERMISSION)) return "";
+		if (!wearer.hasPermission(SM_WEAR_PERMISSION)) return "";
 
-		return plugin.getStreamerModeManager()
-			.filter(sm -> sm.isActive(wearer))
-			.map(sm -> ChatColor.RED + "[SM]")
-			.orElse(null);
+		boolean isActive = plugin.getStreamerModeManager()
+			.map(sm -> sm.isActive(wearer))
+			.orElse(false);
+		if (!isActive) return "";
+
+		String tag = ChatColor.RED + "[SM]";
+		return switch (identifier.toLowerCase()) {
+			case "prefix" -> tag + " ";
+			case "suffix" -> " " + tag;
+			case "tag" -> tag;
+			default -> null;
+		};
 	}
 }
