@@ -99,7 +99,7 @@ public class StreamerModeManager {
 	}
 
 	public boolean isAllowableDuration(Duration duration, Player player) {
-		final double maxDurationMinutes = plugin.getConfig().getDouble("streamer-mode.max-duration");
+		final double maxDurationMinutes = plugin.getConfig().getDouble("streamer-mode.max-duration", 720d);
 		return (duration.getSeconds() <= (maxDurationMinutes * 60))
 			|| player.hasPermission(STREAMER_MODE_BYPASS_MAX_DURATION_PERMISSION);
 	}
