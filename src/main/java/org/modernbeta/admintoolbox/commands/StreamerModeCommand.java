@@ -124,7 +124,7 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 	/// <strong>Only one duration segment is supported.</strong> That means durations such as
 	/// '1h15m' will fail to parse.
 	private Optional<Duration> parseDuration(String input) {
-		Pattern durationPattern = Pattern.compile("^\\s*(?<num>\\d{1,3})(?<unit>[mh])\\s*$", Pattern.CASE_INSENSITIVE);
+		Pattern durationPattern = Pattern.compile("^\\s*(?<num>[1-9]\\d{0,2})(?<unit>[mh])\\s*$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = durationPattern.matcher(input);
 
 		if (!matcher.matches())
