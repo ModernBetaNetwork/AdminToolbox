@@ -56,6 +56,12 @@ permissions:
   admintoolbox.streamermode.unlimited:
     description: Can bypass maximum duration in Streamer Mode.
     default: false
+  admintoolbox.streamermode.placeholder.wear:
+    description: Can wear placeholder while in Streamer Mode.
+    default: true
+  admintoolbox.streamermode.placeholder.view:
+    description: Can see other players' Streamer Mode placeholder.
+    default: op
 
 commands:
   admintoolbox:
