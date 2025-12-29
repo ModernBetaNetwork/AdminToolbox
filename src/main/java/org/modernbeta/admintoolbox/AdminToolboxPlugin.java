@@ -14,6 +14,7 @@ import org.modernbeta.admintoolbox.integration.BlueMapIntegration;
 import org.modernbeta.admintoolbox.integration.luckperms.LuckPermsIntegration;
 import org.modernbeta.admintoolbox.integration.placeholderapi.PlaceholderAPIIntegration;
 import org.modernbeta.admintoolbox.managers.FreezeManager;
+import org.modernbeta.admintoolbox.managers.StreamerModeManager;
 import org.modernbeta.admintoolbox.managers.admin.AdminManager;
 
 import javax.annotation.Nullable;
@@ -27,8 +28,9 @@ import java.util.Optional;
 public class AdminToolboxPlugin extends JavaPlugin {
 	static AdminToolboxPlugin instance;
 
-	AdminManager adminManager;
-	FreezeManager freezeManager;
+	private AdminManager adminManager;
+	private FreezeManager freezeManager;
+	private @Nullable StreamerModeManager streamerModeManager;
 
 	PermissionAudience broadcastAudience;
 
@@ -52,7 +54,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 		this.adminManager = new AdminManager();
 		this.freezeManager = new FreezeManager();
-
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
 		createAdminStateConfig();
@@ -80,7 +81,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 				this.luckPermsIntegration = new LuckPermsIntegration(provider.getProvider());
 				this.luckPermsIntegration.registerCalculator();
 
-				getCommand("streamermode").setExecutor(new StreamerModeCommand());
+				this.streamerModeManager = new StreamerModeManager(this, luckPermsIntegration);
+				getCommand("streamermode").setExecutor(new StreamerModeCommand(streamerModeManager));
 			}
 		} catch (NoClassDefFoundError e) {
 			getLogger().warning("LuckPerms not found! Some features will be unavailable.");
@@ -156,6 +158,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	public FreezeManager getFreezeManager() {
 		return freezeManager;
+	}
+
+	public Optional<StreamerModeManager> getStreamerModeManager() {
+		return Optional.ofNullable(streamerModeManager);
 	}
 
 	public PermissionAudience getAdminAudience() {

@@ -1,12 +1,6 @@
 package org.modernbeta.admintoolbox.commands;
 
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.MetaNode;
-import net.luckperms.api.node.types.PermissionNode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
+import org.modernbeta.admintoolbox.managers.StreamerModeManager;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -25,16 +20,19 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.modernbeta.admintoolbox.managers.StreamerModeManager.STREAMER_MODE_USE_PERMISSION;
+
 public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 	private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
+	private final StreamerModeManager manager;
 
-	private static final String STREAMER_MODE_COMMAND_PERMISSION = "admintoolbox.streamermode";
-	private static final String STREAMER_MODE_BYPASS_MAX_DURATION_PERMISSION = "admintoolbox.streamermode.unlimited";
-	private static final String STREAMER_MODE_LP_META_KEY = "at-streamer-mode-enabled";
+	public StreamerModeCommand(StreamerModeManager streamerModeManager) {
+		this.manager = streamerModeManager;
+	}
 
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-		if (!sender.hasPermission(STREAMER_MODE_COMMAND_PERMISSION))
+		if (!sender.hasPermission(STREAMER_MODE_USE_PERMISSION))
 			return false; // Bukkit should handle this for us, just a sanity-check
 		if (!(sender instanceof Player player)) {
 			sender.sendRichMessage("<red>Only players may use Streamer Mode.");
@@ -50,21 +48,12 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 			sender.sendRichMessage("<red>LuckPerms is required to use Streamer Mode. Is it enabled?");
 			return true;
 		}
-		LuckPerms luckPerms = plugin.getLuckPerms().get().api();
 
-		List<String> disablePermissions = plugin.getConfig().getStringList("streamer-mode.disable-permissions");
-		User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-
-		if (args.length == 0 && isStreamerModeActive(luckPerms, player)) {
-			user.data().clear(NodeType.META.predicate((node) -> node.getMetaKey().equals(STREAMER_MODE_LP_META_KEY)));
-			user.data().clear(NodeType.PERMISSION.predicate((node) -> // only delete negated, expiring nodes that match configured permissions
-				node.isNegated()
-					&& node.getExpiryDuration() != null
-					&& disablePermissions.contains(node.getPermission())
-			));
-			luckPerms.getUserManager().saveUser(user);
-
-			sender.sendRichMessage("<gold>Streamer Mode has been disabled.");
+		if (args.length == 0 && manager.isActive(player)) {
+			manager.disable(player)
+				.thenAccept(state -> {
+					sender.sendRichMessage("<gold>Streamer Mode has been disabled.");
+				});
 			return true;
 		}
 
@@ -85,40 +74,16 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 
 		Duration duration = parsedDuration.get();
 
-		final double maxDurationMinutes = plugin.getConfig().getDouble("streamer-mode.max-duration");
-		if ((duration.getSeconds() > (maxDurationMinutes * 60))
-			&& !sender.hasPermission(STREAMER_MODE_BYPASS_MAX_DURATION_PERMISSION)) {
+		if (!manager.isAllowableDuration(duration, player)) {
 			sender.sendRichMessage("<red>That duration is above the maximum allowed!");
 			return true;
 		}
 
-		MetaNode metaNode = MetaNode.builder()
-			.key(STREAMER_MODE_LP_META_KEY)
-			.value(Boolean.toString(true))
-			.expiry(duration)
-			.build();
-
-		user.data().clear(NodeType.META.predicate((node) -> node.getMetaKey().equals(STREAMER_MODE_LP_META_KEY)));
-		user.data().add(metaNode);
-
-		// using LuckPerms API, add negated/'false' versions of permissions from config.yml to user for duration
-		for (String permission : disablePermissions) {
-			Node permissionNode = PermissionNode.builder()
-				.permission(permission)
-				.expiry(duration)
-				.negated(true)
-				.build();
-
-			user.data().clear(NodeType.PERMISSION.predicate(
-				(node) -> node.getPermission().equals(permission) && node.isNegated()
-			));
-			user.data().add(permissionNode);
-		}
-
-		luckPerms.getUserManager().saveUser(user);
-
-		sender.sendRichMessage("<gold>Streamer Mode will be enabled for <green><duration></green>.",
-			Placeholder.unparsed("duration", formatDuration(duration)));
+		manager.enable(player, duration)
+			.thenAccept(state -> {
+				sender.sendRichMessage("<gold>Streamer Mode will be enabled for <green><duration></green>.",
+					Placeholder.unparsed("duration", formatDuration(state.duration())));
+			});
 		return true;
 	}
 
@@ -130,7 +95,7 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 
 		String partialEntry = args[0];
 
-		if(partialEntry.isEmpty()) {
+		if (partialEntry.isEmpty()) {
 			// Suggest durations if nothing is entered yet -- this is a good UX hint for how to use the command!
 			return List.of("15m", "30m", "5h", "8h");
 		}
@@ -196,12 +161,5 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 		if (minutes > 0) resultList.add(minutes + " minute" + (minutes == 1 ? "" : "s"));
 
 		return String.join(" ", resultList);
-	}
-
-	private boolean isStreamerModeActive(LuckPerms luckPerms, Player player) {
-		return luckPerms.getPlayerAdapter(Player.class)
-			.getMetaData(player)
-			.getMetaValue(STREAMER_MODE_LP_META_KEY, Boolean::valueOf)
-			.orElse(false);
 	}
 }
