@@ -91,32 +91,45 @@ To release a frozen player, use `/unfreeze <player>`
 Allows players to temporarily disable certain permissions (i.e. those that give them staff-only alerts), intended for
 use when screen sharing or live-streaming gameplay.
 
+#### Placeholder
+
+When PlaceholderAPI is available, a placeholder is made available to display when a player has streamer mode active.
+
+- ``%rel_streamermode_tag%``: Displays a `⬤` tag in red when streamer mode is active.
+- ``%rel_streamermode_prefix%``: Displays the tag followed by a space when streamer mode is active.
+- ``%rel_streamermode_suffix%``: Displays the tag preceded by a space when streamer mode is active.
+
 ## Permissions
 
-| Permission                            | Description                                                                                       |
-|---------------------------------------|---------------------------------------------------------------------------------------------------|
-| `admintoolbox.target`                 | Use [`/target`](#target-locations) at current location                                            |
-| `admintoolbox.target.player`          | Use [`/target <player>`](#target-locations)                                                       |
-| `admintoolbox.target.location`        | Use [`/target <x> [y] <z> [world]`](#target-locations)                                            |
-| `admintoolbox.reveal`                 | Use [`/reveal`](#reveal)                                                                          |
-| `admintoolbox.yell`                   | Use [`/yell`](#yell)                                                                              |
-| `admintoolbox.freeze`                 | Use [`/freeze` and `/unfreeze`](#freeze)                                                          |
-| `admintoolbox.spawn`                  | Use [`/spawn`](#targeting-spawn) in current world                                                 |
-| `admintoolbox.spawn.all`              | Use [`/spawn [world]`](#targeting-spawn)                                                          |
-| `admintoolbox.fullbright`             | Use [`/fullbright`](#fullbright) while in admin mode                                              |
-| `admintoolbox.broadcast.receive`      | Receive alerts about others' [targets](#spectate), [yells](#yell), and [freeze](#freeze) actions. |
-| `admintoolbox.broadcast.exempt`       | Do not send alerts to players with `admintoolbox.broadcast.receive`                               |
-| `admintoolbox.streamermode`           | Use [streamer mode](#streamer-mode)                                                               |
-| `admintoolbox.streamermode.unlimited` | Bypass maximum streamer mode duration. (Set in config.yml)                                        |
+| Permission                                   | Description                                                                                       |
+|----------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `admintoolbox.target`                        | Use [`/target`](#target-locations) at current location                                            |
+| `admintoolbox.target.player`                 | Use [`/target <player>`](#target-locations)                                                       |
+| `admintoolbox.target.location`               | Use [`/target <x> [y] <z> [world]`](#target-locations)                                            |
+| `admintoolbox.reveal`                        | Use [`/reveal`](#reveal)                                                                          |
+| `admintoolbox.yell`                          | Use [`/yell`](#yell)                                                                              |
+| `admintoolbox.freeze`                        | Use [`/freeze` and `/unfreeze`](#freeze)                                                          |
+| `admintoolbox.spawn`                         | Use [`/spawn`](#targeting-spawn) in current world                                                 |
+| `admintoolbox.spawn.all`                     | Use [`/spawn [world]`](#targeting-spawn)                                                          |
+| `admintoolbox.fullbright`                    | Use [`/fullbright`](#fullbright) while in admin mode                                              |
+| `admintoolbox.broadcast.receive`             | Receive alerts about others' [targets](#spectate), [yells](#yell), and [freeze](#freeze) actions. |
+| `admintoolbox.broadcast.exempt`              | Do not send alerts to players with `admintoolbox.broadcast.receive`                               |
+| `admintoolbox.streamermode`                  | Use [streamer mode](#streamer-mode)                                                               |
+| `admintoolbox.streamermode.unlimited`        | Bypass maximum streamer mode duration. (Set in config.yml)                                        |
+| `admintoolbox.streamermode.placeholder.wear` | Wear the streamer mode status placeholder.                                                        |
+| `admintoolbox.streamermode.placeholder.view` | View other players' streamer mode status placeholders.                                            |
 
 ## Integrations
 
 - **[LuckPerms](https://luckperms.net/)**
-    - Required for [Streamer Mode](#streamer-mode).
+    - Required for [streamer mode](#streamer-mode).
     - **New in version 1.4.0:** Custom context for conditionally applying permissions based on admin state.
         - **`admintoolbox:state`** can be any of `spectating`, `revealed`, or `normal` (not in admin mode).
 - **[BlueMap](https://bluemap.bluecolored.de)**
     - The plugin will hide admins who are [revealed](#reveal) from the map.
+- **[PlaceholderAPI](https://modrinth.com/plugin/placeholderapi)**
+    - The plugin provides a placeholder for players' [streamer mode](#streamer-mode) status.
+    - Players must have the appropriate [permissions](#permissions) to wear and view the placeholder.
 
 ## Analytics
 
