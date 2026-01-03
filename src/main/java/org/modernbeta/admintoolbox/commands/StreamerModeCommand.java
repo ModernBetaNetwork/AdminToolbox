@@ -35,30 +35,30 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 		if (!sender.hasPermission(STREAMER_MODE_USE_PERMISSION))
 			return false; // Bukkit should handle this for us, just a sanity-check
 		if (!(sender instanceof Player player)) {
-			sender.sendRichMessage("<red>Only players may use Streamer Mode.");
+			sender.sendRichMessage("<red>Only players may use streamer mode.");
 			return true;
 		}
 
 		if (!plugin.getConfig().getBoolean("streamer-mode.allow", false)) {
-			sender.sendRichMessage("<red>Streamer Mode is disabled on this server.<addendum>",
+			sender.sendRichMessage("<red>Streamer mode is disabled on this server.<addendum>",
 				Placeholder.unparsed("addendum", player.isOp() ? " (streamer-mode -> allow is 'false' in config.yml)" : ""));
 			return true;
 		}
 		if (plugin.getLuckPerms().isEmpty()) {
-			sender.sendRichMessage("<red>LuckPerms is required to use Streamer Mode. Is it enabled?");
+			sender.sendRichMessage("<red>LuckPerms is required to use streamer mode. Is it enabled?");
 			return true;
 		}
 
 		if (args.length == 0 && manager.isActive(player)) {
 			manager.disable(player)
 				.thenAccept(state -> {
-					sender.sendRichMessage("<gold>Streamer Mode has been disabled.");
+					sender.sendRichMessage("<gold>Streamer mode has been disabled.");
 				});
 			return true;
 		}
 
 		if (args.length < 1) {
-			sender.sendRichMessage("<red>You must provide a duration for Streamer Mode!");
+			sender.sendRichMessage("<red>You must provide a duration for streamer mode!");
 			return false;
 		} else if (args.length > 1) {
 			return false;
@@ -81,7 +81,7 @@ public class StreamerModeCommand implements CommandExecutor, TabCompleter {
 
 		manager.enable(player, duration)
 			.thenAccept(state -> {
-				sender.sendRichMessage("<gold>Streamer Mode will be enabled for <green><duration></green>.",
+				sender.sendRichMessage("<gold>Streamer mode will be enabled for <green><duration></green>.",
 					Placeholder.unparsed("duration", formatDuration(state.duration())));
 			});
 		return true;

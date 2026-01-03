@@ -192,8 +192,8 @@ public class AdminToolboxPlugin extends JavaPlugin {
 			streamerMode.set("disable-permissions", List.of("admintoolbox.broadcast.receive"));
 
 			// docs
-			streamerMode.setInlineComments("allow", List.of("Enable or disable usage of Streamer Mode. 'true' enables usage of Streamer Mode, while 'false' disables Streamer Mode entirely."));
-			streamerMode.setInlineComments("max-duration", List.of("The maximum duration a player can enable Streamer Mode for, in minutes."));
+			streamerMode.setInlineComments("allow", List.of("Enable or disable usage of streamer mode. 'true' is enabled, 'false' is disabled"));
+			streamerMode.setInlineComments("max-duration", List.of("The maximum duration a player can enable streamer mode for, in minutes."));
 			streamerMode.setInlineComments("disable-permissions", List.of("The list of permissions to disable for the given time period."));
 		}
 

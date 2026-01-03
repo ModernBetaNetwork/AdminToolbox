@@ -52,15 +52,15 @@ permissions:
       - admintoolbox.yell
       - admintoolbox.broadcast.receive
   admintoolbox.streamermode:
-    description: Can enter and exit Streamer Mode.
+    description: Can enter and exit streamer mode.
   admintoolbox.streamermode.unlimited:
-    description: Can bypass maximum duration in Streamer Mode.
+    description: Can bypass maximum duration in streamer mode.
     default: false
   admintoolbox.streamermode.placeholder.wear:
-    description: Can wear placeholder while in Streamer Mode.
+    description: Can wear placeholder while in streamer mode.
     default: true
   admintoolbox.streamermode.placeholder.view:
-    description: Can see other players' Streamer Mode placeholder.
+    description: Can see other players' streamer mode status placeholder.
     default: op
 
 commands:
@@ -117,7 +117,7 @@ commands:
     aliases: [ fb, nightvision, nv ]
     permission: admintoolbox.fullbright
   streamermode:
-    description: Enter Streamer Mode, temporarily disabling certain privileges.
+    description: Enter streamer mode, temporarily disabling certain privileges.
     usage: /<command> [duration]
     aliases: [ sm, pausealerts, pa ]
     permission: admintoolbox.streamermode
