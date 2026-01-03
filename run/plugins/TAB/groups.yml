@@ -1,0 +1,3 @@
+_DEFAULT_:
+  tabprefix: "%rel_streamermode_prefix%&r%luckperms-prefix%"
+  tagsuffix: "%luckperms-suffix%"
