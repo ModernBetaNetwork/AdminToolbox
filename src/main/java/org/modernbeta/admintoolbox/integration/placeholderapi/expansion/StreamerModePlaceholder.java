@@ -52,7 +52,7 @@ public class StreamerModePlaceholder extends PlaceholderExpansion implements Rel
 			.orElse(false);
 		if (!isActive) return "";
 
-		String tag = ChatColor.RED + "[SM]";
+		String tag = ChatColor.RED + "⬤";
 		return switch (identifier.toLowerCase()) {
 			case "prefix" -> tag + " ";
 			case "suffix" -> " " + tag;
