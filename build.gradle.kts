@@ -114,7 +114,7 @@ tasks.runServer {
     downloadPlugins {
         from(plugins)
         // Add Folia-incompatible plugins below
-        modrinth("luckperms", "v5.5.0-bukkit") // they are working on Folia support but it's not ready yet!
+        modrinth("luckperms", "v5.5.0-bukkit")
     }
 }
 
@@ -122,6 +122,10 @@ tasks.runServer {
 runPaper.folia.registerTask {
     minecraftVersion("1.20.4")
     downloadPlugins.from(plugins)
+    downloadPlugins {
+        // LuckPerms for Folia
+        url("https://ci.lucko.me/job/LuckPerms-Folia/9/artifact/bukkit/loader/build/libs/LuckPerms-Bukkit-5.5.11.jar")
+    }
 }
 
 // better IntelliJ IDEA debugging
