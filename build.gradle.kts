@@ -8,7 +8,7 @@ plugins {
 
 group = "org.modernbeta.admintoolbox"
 
-val baseVersion = "1.4.1"
+val baseVersion = "1.5.0"
 version = run {
     // CI: on release tag - use that version
     val refType = System.getenv("GITHUB_REF_TYPE")
