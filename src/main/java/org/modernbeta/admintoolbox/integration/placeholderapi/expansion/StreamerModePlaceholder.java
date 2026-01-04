@@ -6,8 +6,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.modernbeta.admintoolbox.AdminToolboxPlugin;
+import org.modernbeta.admintoolbox.managers.StreamerModeManager;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class StreamerModePlaceholder extends PlaceholderExpansion implements Relational {
 	private final AdminToolboxPlugin plugin;
@@ -44,11 +46,20 @@ public class StreamerModePlaceholder extends PlaceholderExpansion implements Rel
 	@Override
 	public String onPlaceholderRequest(Player viewer, Player wearer, String identifier) {
 		if (viewer == null || wearer == null) return "";
+
+		Optional<StreamerModeManager> streamerModeManager = plugin.getStreamerModeManager();
+
+		// hide placeholder from players currently in streamer mode
+		if (!plugin.getConfig().getBoolean("streamermode.show-indicators-when-active", false)
+			&& streamerModeManager.map(sm ->
+				sm.isActive(viewer))
+			.orElse(false)) return "";
+
 		if (!viewer.hasPermission(SM_VIEW_PERMISSION)) return "";
 		if (!wearer.hasPermission(SM_WEAR_PERMISSION)) return "";
 
-		boolean isActive = plugin.getStreamerModeManager()
-			.map(sm -> sm.isActive(wearer))
+		boolean isActive = streamerModeManager.map(sm ->
+				sm.isActive(wearer))
 			.orElse(false);
 		if (!isActive) return "";
 
