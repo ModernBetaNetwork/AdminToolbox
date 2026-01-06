@@ -1,5 +1,8 @@
 package org.modernbeta.admintoolbox;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -47,6 +50,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public static final String BROADCAST_EXEMPT_PERMISSION = "admintoolbox.broadcast.exempt";
 
 	private static final int BSTATS_PLUGIN_ID = 26406;
+	private static final String MODRINTH_PROJECT_ID = "TYi0LZWN";
 
 	@Override
 	public void onEnable() {
@@ -74,6 +78,42 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
 
 		initializeConfig();
+
+		if (getConfig().getBoolean("check-updates", false)) {
+			Optional<ModrinthUpdateChecker.ModrinthVersion> newerVersion = ModrinthUpdateChecker.getNewerVersion(
+				getPluginMeta().getVersion(), MODRINTH_PROJECT_ID,
+				Bukkit.getName().toLowerCase(), Bukkit.getMinecraftVersion());
+
+			Component updateMessage = newerVersion
+				.map(version -> {
+					ModrinthUpdateChecker.ModrinthFile primaryFile;
+					for (ModrinthUpdateChecker.ModrinthFile file : version.files()) {
+						if (file.primary()) {
+							primaryFile = file;
+							break;
+						}
+					}
+
+					return Component.text()
+						.color(NamedTextColor.GOLD)
+						.appendNewline()
+						.append(Component.text("Version "
+							+ version.versionNumber()
+							+ " of "
+							+ getPluginMeta().getName()
+							+ " is now available!"
+						).decorate(TextDecoration.BOLD))
+						.appendNewline()
+						.append(Component.text("You are running version "
+							+ getPluginMeta().getVersion() + "."))
+						.appendNewline()
+						.append(Component.text("Download it here: " + version.files()))
+						.build();
+				})
+				.orElseGet(() -> Component.text("No updates are available for " + getPluginMeta().getName() + "."));
+
+			getComponentLogger().info(updateMessage);
+		}
 
 		try {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
@@ -185,6 +225,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public Configuration getConfigDefaults() {
 		Configuration defaults = new YamlConfiguration();
 
+		defaults.set("check-updates", true);
+		defaults.setComments("check-updates", List.of("Enable update check. When enabled, AdminToolbox will notify via the server console that a new version is available."));
+
+		// streamer-mode section
 		{
 			ConfigurationSection streamerMode = defaults.createSection("streamer-mode");
 			streamerMode.set("allow", true);
