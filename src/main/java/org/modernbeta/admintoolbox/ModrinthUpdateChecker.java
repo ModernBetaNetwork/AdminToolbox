@@ -132,23 +132,18 @@ public class ModrinthUpdateChecker {
 					return Optional.of(
 						new ModrinthVersion(versionNumber, datePublished, downloadUrl));
 				}
-				;
 			}
 		} catch (IOException | InterruptedException e) {
-			plugin.getLogger().severe("Failed request plugin versions from Modrinth!");
-			plugin.getLogger().severe(e.toString());
+			plugin.getLogger().severe("Failed request plugin versions from Modrinth: " + e.getMessage());
 			return Optional.empty();
 		} catch (JsonParseException e) {
-			plugin.getLogger().severe("Failed to parse plugin versions response from Modrinth!");
-			plugin.getLogger().severe(e.toString());
+			plugin.getLogger().severe("Failed to parse plugin versions response from Modrinth: " + e.getMessage());
 			return Optional.empty();
 		} catch (DateTimeParseException e) {
-			plugin.getLogger().severe("Failed to parse version published_date from Modrinth!");
-			plugin.getLogger().severe(e.toString());
+			plugin.getLogger().severe("Failed to parse version published_date from Modrinth: " + e.getMessage());
 			return Optional.empty();
 		} catch (URISyntaxException e) {
-			plugin.getLogger().severe("Failed to create URL to check updates from Modrinth!");
-			plugin.getLogger().severe(e.toString());
+			plugin.getLogger().severe("Failed to create URL to check updates from Modrinth: " + e.getMessage());
 			return Optional.empty();
 		}
 
