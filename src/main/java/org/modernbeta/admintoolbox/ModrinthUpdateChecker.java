@@ -170,15 +170,17 @@ public class ModrinthUpdateChecker {
 		return false; // versions are equal
 	}
 
+	private static final Pattern SEMVER_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)");
+
 	private static int[] parseSemverParts(String version) throws NumberFormatException {
-		final String[] parts = version.split("\\.");
-		if (parts.length != SEMVER_LENGTH)
-			throw new NumberFormatException("Version is not valid untagged semver! (expected: x.x.x)");
+		Matcher matcher = SEMVER_PATTERN.matcher(version);
+		if (!matcher.find())
+			throw new NumberFormatException("Version is not valid semantic version! (expected: x.x.x)");
 
 		return new int[]{
-			Integer.parseInt(parts[0]),
-			Integer.parseInt(parts[1]),
-			Integer.parseInt(parts[2]),
+			Integer.parseInt(matcher.group(1)),
+			Integer.parseInt(matcher.group(2)),
+			Integer.parseInt(matcher.group(3)),
 		};
 	}
 }
