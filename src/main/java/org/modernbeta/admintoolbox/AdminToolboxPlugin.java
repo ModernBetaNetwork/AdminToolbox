@@ -1,8 +1,5 @@
 package org.modernbeta.admintoolbox;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -31,6 +28,8 @@ import java.util.Optional;
 public class AdminToolboxPlugin extends JavaPlugin {
 	static AdminToolboxPlugin instance;
 
+	private ModrinthUpdateChecker updateChecker;
+
 	private AdminManager adminManager;
 	private FreezeManager freezeManager;
 	private @Nullable StreamerModeManager streamerModeManager;
@@ -56,6 +55,11 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
+		boolean shouldCheckUpdates = getConfig().getBoolean("check-updates", false);
+		if (shouldCheckUpdates)
+			getComponentLogger()
+				.info(new ModrinthUpdateChecker().getUpdateMessage(MODRINTH_PROJECT_ID));
+
 		this.adminManager = new AdminManager();
 		this.freezeManager = new FreezeManager();
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
@@ -78,42 +82,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		getCommand("fullbright").setExecutor(new FullbrightCommand());
 
 		initializeConfig();
-
-		if (getConfig().getBoolean("check-updates", false)) {
-			Optional<ModrinthUpdateChecker.ModrinthVersion> newerVersion = ModrinthUpdateChecker.getNewerVersion(
-				getPluginMeta().getVersion(), MODRINTH_PROJECT_ID,
-				Bukkit.getName().toLowerCase(), Bukkit.getMinecraftVersion());
-
-			Component updateMessage = newerVersion
-				.map(version -> {
-					ModrinthUpdateChecker.ModrinthFile primaryFile;
-					for (ModrinthUpdateChecker.ModrinthFile file : version.files()) {
-						if (file.primary()) {
-							primaryFile = file;
-							break;
-						}
-					}
-
-					return Component.text()
-						.color(NamedTextColor.GOLD)
-						.appendNewline()
-						.append(Component.text("Version "
-							+ version.versionNumber()
-							+ " of "
-							+ getPluginMeta().getName()
-							+ " is now available!"
-						).decorate(TextDecoration.BOLD))
-						.appendNewline()
-						.append(Component.text("You are running version "
-							+ getPluginMeta().getVersion() + "."))
-						.appendNewline()
-						.append(Component.text("Download it here: " + version.files()))
-						.build();
-				})
-				.orElseGet(() -> Component.text("No updates are available for " + getPluginMeta().getName() + "."));
-
-			getComponentLogger().info(updateMessage);
-		}
 
 		try {
 			RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);

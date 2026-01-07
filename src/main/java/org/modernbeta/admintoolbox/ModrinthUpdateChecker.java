@@ -1,11 +1,13 @@
 package org.modernbeta.admintoolbox;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,7 +18,10 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -24,34 +29,54 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class ModrinthUpdateChecker {
 	private static final int SEMVER_LENGTH = 3;
 
-	private static final Gson GSON = new Gson();
+	private final AdminToolboxPlugin plugin = AdminToolboxPlugin.getInstance();
+	private final Gson gson = new Gson();
 
-	public static Optional<ModrinthVersion> getNewerVersion(String currentVersion, String projectId, String loader, String gameVersion) {
+	public TextComponent getUpdateMessage(String projectId) {
+		String pluginName = plugin.getPluginMeta().getName();
+		String currentVersion = plugin.getPluginMeta().getVersion();
+		String loader = Bukkit.getName();
+		String gameVersion = Bukkit.getServer().getMinecraftVersion();
+
+		Optional<ModrinthVersion> newestCompatibleVersion =
+			getNewestCompatibleVersion(projectId, currentVersion, loader, gameVersion);
+
+		return newestCompatibleVersion.map((version) -> {
+			TextComponent.Builder builder = Component.text()
+				.color(NamedTextColor.GOLD)
+				.appendNewline()
+				.append(Component.text("Version " + version.versionNumber()
+					+ " of " + pluginName + " is now available!"
+				).decorate(TextDecoration.BOLD))
+				.appendNewline()
+				.append(Component.text("You are running version " + currentVersion + "."));
+
+			if (version.downloadUrl() != null)
+				builder
+					.appendNewline()
+					.append(Component.text("Download it here: " + version.downloadUrl()));
+
+			return builder.appendNewline().build();
+		}).orElseGet(() -> Component.text("You're running the latest release of " + pluginName + "."));
+	}
+
+	public Optional<ModrinthVersion> getNewestCompatibleVersion(String projectId, String currentVersion, String loader, String gameVersion) {
 		int[] currentVersionParsed;
 		try {
 			currentVersionParsed = parseSemverParts(currentVersion);
 		} catch (NumberFormatException e) {
+			plugin.getLogger().warning("Could not parse current version: " + currentVersion);
 			return Optional.empty();
 		}
 
-		List<ModrinthVersion> compatibleVersions = getCompatibleVersions(projectId, loader, gameVersion);
+		plugin.getLogger()
+			.info("Checking for updates compatible with " + loader + " " + gameVersion + "...");
 
-		for (ModrinthVersion version : compatibleVersions) {
-			int[] versionParsed = parseSemverParts(version.versionNumber);
-			if (isGreaterVersion(versionParsed, currentVersionParsed)) {
-				return Optional.of(version);
-			}
-		}
-
-		return Optional.empty(); // no newer version found
-	}
-
-	private static @Nonnull List<ModrinthVersion> getCompatibleVersions(String projectId, String loader, String gameVersion) {
 		try (HttpClient client = HttpClient.newHttpClient()) {
 			// modrinth api has stupid non-standard query param expectations,
 			// so we must wrap them in javascript arrays
 			String queryString = Map.of(
-					"loaders", "[\"" + loader + "\"]",
+					"loaders", "[\"" + loader.toLowerCase() + "\"]",
 					"game_versions", "[\"" + gameVersion + "\"]"
 				)
 				.entrySet().stream()
@@ -67,6 +92,7 @@ public class ModrinthUpdateChecker {
 				queryString,
 				null
 			);
+
 			HttpRequest req = HttpRequest.newBuilder()
 				.uri(requestUri)
 				.GET()
@@ -75,48 +101,62 @@ public class ModrinthUpdateChecker {
 			HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
 			String rawBody = res.body();
 
-			List<ModrinthVersion> versions = new ArrayList<>();
-			JsonArray rawVersionList = GSON.fromJson(rawBody, JsonArray.class);
+			JsonArray rawVersionList = gson.fromJson(rawBody, JsonArray.class);
 			for (JsonElement element : rawVersionList) {
 				if (!element.isJsonObject()) continue;
 
 				JsonObject object = element.getAsJsonObject();
-				String versionNumber = object.get("version_number").getAsString();
+
 				String versionType = object.get("version_type").getAsString();
+				if (!versionType.equals("release")) continue;
+
 				String status = object.get("status").getAsString();
+				if (!status.equals("listed")) continue;
+
+				String versionNumber = object.get("version_number").getAsString();
 				Instant datePublished = Instant.parse(object.get("date_published").getAsString());
 
-				List<ModrinthFile> files = new ArrayList<>();
-				for (JsonElement rawFile : object.get("files").getAsJsonArray()) {
-					if (!rawFile.isJsonObject()) continue;
+				if (isGreaterVersion(parseSemverParts(versionNumber), currentVersionParsed)) {
+					String downloadUrl = null;
+					for (JsonElement rawFile : object.get("files").getAsJsonArray()) {
+						if (!rawFile.isJsonObject()) continue;
 
-					JsonObject fileObject = rawFile.getAsJsonObject();
-					String url = fileObject.get("url").getAsString();
-					boolean primary = fileObject.get("primary").getAsBoolean();
+						JsonObject fileObject = rawFile.getAsJsonObject();
+						boolean primary = fileObject.get("primary").getAsBoolean();
+						if (!primary) continue;
 
-					files.add(new ModrinthFile(url, primary));
+						downloadUrl = fileObject.get("url").getAsString();
+						break;
+					}
+
+					return Optional.of(
+						new ModrinthVersion(versionNumber, datePublished, downloadUrl));
 				}
-
-				versions.add(new ModrinthVersion(versionNumber, versionType, status, datePublished, files));
+				;
 			}
-
-			return versions;
 		} catch (IOException | InterruptedException e) {
-			return List.of(); // request failed; fail check silently
+			plugin.getLogger().severe("Failed request plugin versions from Modrinth!");
+			plugin.getLogger().severe(e.toString());
+			return Optional.empty();
+		} catch (JsonParseException e) {
+			plugin.getLogger().severe("Failed to parse plugin versions response from Modrinth!");
+			plugin.getLogger().severe(e.toString());
+			return Optional.empty();
 		} catch (DateTimeParseException e) {
-			// TODO: log date parse failure
-			return List.of();
+			plugin.getLogger().severe("Failed to parse version published_date from Modrinth!");
+			plugin.getLogger().severe(e.toString());
+			return Optional.empty();
 		} catch (URISyntaxException e) {
-			// TODO: log uri build failure
-			return List.of();
+			plugin.getLogger().severe("Failed to create URL to check updates from Modrinth!");
+			plugin.getLogger().severe(e.toString());
+			return Optional.empty();
 		}
+
+		return Optional.empty(); // no newer version found
 	}
 
-	public record ModrinthVersion(String versionNumber, String versionType, String status,
-						   Instant datePublished, List<ModrinthFile> files) {
-	}
-
-	public record ModrinthFile(String url, boolean primary) {
+	public record ModrinthVersion(String versionNumber, Instant datePublished,
+								  @Nullable String downloadUrl) {
 	}
 
 	private static boolean isGreaterVersion(int[] a, int[] b) throws IllegalArgumentException {
