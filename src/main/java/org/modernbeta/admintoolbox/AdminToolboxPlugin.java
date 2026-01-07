@@ -194,7 +194,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		Configuration defaults = new YamlConfiguration();
 
 		defaults.set("check-updates", true);
-		defaults.setComments("check-updates", List.of("Enable update check. When enabled, AdminToolbox will notify via the server console that a new version is available."));
+		defaults.setInlineComments("check-updates", List.of("Enable update check. When enabled, AdminToolbox will notify via the server console that a new version is available."));
 
 		// streamer-mode section
 		{
