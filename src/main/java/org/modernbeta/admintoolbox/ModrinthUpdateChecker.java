@@ -77,7 +77,9 @@ public class ModrinthUpdateChecker {
 			// so we must wrap them in javascript arrays
 			String queryString = Map.of(
 					"loaders", "[\"" + loader.toLowerCase() + "\"]",
-					"game_versions", "[\"" + gameVersion + "\"]"
+					"game_versions", "[\"" + gameVersion + "\"]",
+					//  Added 2026-01-15 - decreases metadata to parsed
+					"include_changelog", "false"
 				)
 				.entrySet().stream()
 				.map(entry ->
