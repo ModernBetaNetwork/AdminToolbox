@@ -28,6 +28,8 @@ import java.util.Optional;
 public class AdminToolboxPlugin extends JavaPlugin {
 	static AdminToolboxPlugin instance;
 
+	private ModrinthUpdateChecker updateChecker;
+
 	private AdminManager adminManager;
 	private FreezeManager freezeManager;
 	private @Nullable StreamerModeManager streamerModeManager;
@@ -47,10 +49,16 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public static final String BROADCAST_EXEMPT_PERMISSION = "admintoolbox.broadcast.exempt";
 
 	private static final int BSTATS_PLUGIN_ID = 26406;
+	private static final String MODRINTH_PROJECT_ID = "TYi0LZWN";
 
 	@Override
 	public void onEnable() {
 		instance = this;
+
+		boolean shouldCheckUpdates = getConfig().getBoolean("check-updates", false);
+		if (shouldCheckUpdates)
+			getComponentLogger()
+				.info(new ModrinthUpdateChecker().getUpdateMessage(MODRINTH_PROJECT_ID));
 
 		this.adminManager = new AdminManager();
 		this.freezeManager = new FreezeManager();
@@ -185,6 +193,10 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	public Configuration getConfigDefaults() {
 		Configuration defaults = new YamlConfiguration();
 
+		defaults.set("check-updates", true);
+		defaults.setInlineComments("check-updates", List.of("Enable update check. When enabled, AdminToolbox will notify via the server console that a new version is available."));
+
+		// streamer-mode section
 		{
 			ConfigurationSection streamerMode = defaults.createSection("streamer-mode");
 			streamerMode.set("allow", true);
