@@ -23,7 +23,7 @@ playerlist-objective:
   render-type: INTEGER
   disable-condition: '%world%=disabledworld'
 belowname-objective:
-  enabled: true
+  enabled: false
   value: '%rel_streamermode_tag%'
   title: ''
   fancy-value: '&c%health%'
