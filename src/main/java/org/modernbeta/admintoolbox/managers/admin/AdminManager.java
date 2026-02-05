@@ -1,5 +1,6 @@
 package org.modernbeta.admintoolbox.managers.admin;
 
+import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -287,5 +288,18 @@ public class AdminManager implements Listener {
 
 		player.sendRichMessage("<red>You don't have permission to spectate players");
 		teleportEvent.setCancelled(true);
+	}
+
+	/// Prevent players in admin mode from changing their spawnpoint when sleeping or clicking a
+	/// respawn anchor.
+	@EventHandler
+	public void onAdminSetSpawn(PlayerSetSpawnEvent event) {
+		if (!isActiveAdmin(event.getPlayer())) return;
+
+		switch (event.getCause()) {
+			case BED, RESPAWN_ANCHOR -> {
+				event.setCancelled(true);
+			}
+		}
 	}
 }
