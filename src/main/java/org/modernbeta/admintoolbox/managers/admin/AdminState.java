@@ -65,12 +65,11 @@ public class AdminState {
 	}
 
 	static AdminState fromConfig(UUID playerId, ConfigurationSection playerSection) {
-		final int PLAYER_INVENTORY_SLOTS = 41;
-
-		ItemStack[] items = new ItemStack[PLAYER_INVENTORY_SLOTS];
+		ItemStack[] items = new ItemStack[0];
 		if (playerSection.contains("inventory")) {
 			List<?> invList = playerSection.getList("inventory");
 			if (invList != null) {
+				items = new ItemStack[invList.size()];
 				for (int i = 0; i < invList.size(); i++) {
 					Object obj = invList.get(i);
 					if (obj == null) {
