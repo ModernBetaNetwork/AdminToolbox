@@ -27,6 +27,7 @@ import org.modernbeta.admintoolbox.AdminToolboxPlugin;
 import org.modernbeta.admintoolbox.managers.admin.AdminState.TeleportHistory;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -178,14 +179,14 @@ public class AdminManager implements Listener {
 		return Optional.ofNullable(adminStates.get(player.getUniqueId()));
 	}
 
-	private @Nullable AdminState loadStateFromFile(UUID playerId) {
+	private @Nullable AdminState loadStateFromFile(Player player) {
 		FileConfiguration state = plugin.getAdminStateConfig();
-		if (!state.isConfigurationSection(playerId.toString())) return null;
+		if (!state.isConfigurationSection(player.getUniqueId().toString())) return null;
 
-		ConfigurationSection playerSection = state.getConfigurationSection(playerId.toString());
+		ConfigurationSection playerSection = state.getConfigurationSection(player.getUniqueId().toString());
 		assert playerSection != null;
 
-		return AdminState.fromConfig(playerId, playerSection);
+		return AdminState.fromConfig(player, playerSection);
 	}
 
 	private CompletableFuture<Location> getNextLowestSafeLocation(Location location) {
@@ -253,7 +254,7 @@ public class AdminManager implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	void onAdminJoin(PlayerJoinEvent joinEvent) {
 		Player player = joinEvent.getPlayer();
-		Optional.ofNullable(loadStateFromFile(player.getUniqueId()))
+		Optional.ofNullable(loadStateFromFile(player))
 			.ifPresent((state) -> {
 				adminStates.put(player.getUniqueId(), state);
 

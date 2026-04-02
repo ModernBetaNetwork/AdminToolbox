@@ -64,14 +64,18 @@ public class AdminState {
 		);
 	}
 
-	static AdminState fromConfig(UUID playerId, ConfigurationSection playerSection) {
-		final int PLAYER_INVENTORY_SLOTS = 41;
+	static AdminState fromConfig(Player player, ConfigurationSection playerSection) {
+		UUID playerId = player.getUniqueId();
 
-		ItemStack[] items = new ItemStack[PLAYER_INVENTORY_SLOTS];
+		ItemStack[] items = new ItemStack[0];
 		if (playerSection.contains("inventory")) {
 			List<?> invList = playerSection.getList("inventory");
 			if (invList != null) {
-				for (int i = 0; i < invList.size(); i++) {
+				// NOTE: This is a hotfix for users who use plugins that change the inventory size
+				// from the vanilla default of 41. We used to hardcode this, it caused an
+				// exception when restoring.
+				items = new ItemStack[Math.min(invList.size(), player.getInventory().getContents().length)];
+				for (int i = 0; i < items.length; i++) {
 					Object obj = invList.get(i);
 					if (obj == null) {
 						items[i] = null; // preserve empty slots
