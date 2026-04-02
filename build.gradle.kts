@@ -103,7 +103,7 @@ tasks.shadowJar {
 }
 
 val plugins = runPaper.downloadPluginsSpec {
-    modrinth("viaversion", "5.6.0") // makes testing much easier
+    modrinth("viaversion", "5.8.1") // makes testing much easier
     modrinth("bluemap", "5.5-paper")
     modrinth("placeholderapi", "2.11.7")
     modrinth("tab-was-taken", "5.4.0")
