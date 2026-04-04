@@ -137,9 +137,11 @@ public class AdminManager implements Listener {
 				player.getInventory().setContents(originalInventory);
 
 				adminStates.remove(uuid);
-				FileConfiguration adminStateConfig = plugin.getAdminStateConfig();
-				adminStateConfig.set(player.getUniqueId().toString(), null);
-				plugin.saveAdminStateConfig();
+				synchronized (plugin.getAdminStateLock()) {
+					FileConfiguration adminStateConfig = plugin.getAdminStateConfig();
+					adminStateConfig.set(player.getUniqueId().toString(), null);
+					plugin.saveAdminStateConfig();
+				}
 
 				plugin.getBlueMap().ifPresent((blueMap) -> {
 					adminState.getSavedMapVisibility().ifPresent((visibility) -> {
@@ -180,13 +182,15 @@ public class AdminManager implements Listener {
 	}
 
 	private @Nullable AdminState loadStateFromFile(Player player) {
-		FileConfiguration state = plugin.getAdminStateConfig();
-		if (!state.isConfigurationSection(player.getUniqueId().toString())) return null;
+		synchronized (plugin.getAdminStateLock()) {
+			FileConfiguration state = plugin.getAdminStateConfig();
+			if (!state.isConfigurationSection(player.getUniqueId().toString())) return null;
 
-		ConfigurationSection playerSection = state.getConfigurationSection(player.getUniqueId().toString());
-		assert playerSection != null;
+			ConfigurationSection playerSection = state.getConfigurationSection(player.getUniqueId().toString());
+			assert playerSection != null;
 
-		return AdminState.fromConfig(player, playerSection);
+			return AdminState.fromConfig(player, playerSection);
+		}
 	}
 
 	private CompletableFuture<Location> getNextLowestSafeLocation(Location location) {
@@ -246,8 +250,10 @@ public class AdminManager implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	void onPluginDisable(PluginDisableEvent disableEvent) {
-		for (AdminState adminState : adminStates.values()) {
-			adminState.saveToFile();
+		synchronized (plugin.getAdminStateLock()) {
+			for (AdminState adminState : adminStates.values()) {
+				adminState.saveToFile();
+			}
 		}
 	}
 

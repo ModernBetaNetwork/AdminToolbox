@@ -171,27 +171,29 @@ public class AdminState {
 	}
 
 	void saveToFile() {
-		FileConfiguration adminState = plugin.getAdminStateConfig();
-		ConfigurationSection playerSection = adminState.createSection(playerId.toString());
+		synchronized (plugin.getAdminStateLock()) {
+			FileConfiguration adminState = plugin.getAdminStateConfig();
+			ConfigurationSection playerSection = adminState.createSection(playerId.toString());
 
-		playerSection.set("inventory", savedInventory);
-		playerSection.set("status", status.name());
-		if (savedMapVisibility != null) {
-			playerSection.set("map_visibility", savedMapVisibility);
+			playerSection.set("inventory", savedInventory);
+			playerSection.set("status", status.name());
+			if (savedMapVisibility != null) {
+				playerSection.set("map_visibility", savedMapVisibility);
+			}
+
+			Location originalLocation = teleportHistory.getOriginalLocation();
+			if (originalLocation != null) {
+				ConfigurationSection locationSection = playerSection.createSection("original_location");
+				locationSection.set("world", originalLocation.getWorld().getName());
+				locationSection.set("x", originalLocation.getX());
+				locationSection.set("y", originalLocation.getY());
+				locationSection.set("z", originalLocation.getZ());
+				locationSection.set("yaw", originalLocation.getYaw());
+				locationSection.set("pitch", originalLocation.getPitch());
+			}
+
+			plugin.saveAdminStateConfig();
 		}
-
-		Location originalLocation = teleportHistory.getOriginalLocation();
-		if (originalLocation != null) {
-			ConfigurationSection locationSection = playerSection.createSection("original_location");
-			locationSection.set("world", originalLocation.getWorld().getName());
-			locationSection.set("x", originalLocation.getX());
-			locationSection.set("y", originalLocation.getY());
-			locationSection.set("z", originalLocation.getZ());
-			locationSection.set("yaw", originalLocation.getYaw());
-			locationSection.set("pitch", originalLocation.getPitch());
-		}
-
-		plugin.saveAdminStateConfig();
 	}
 
 	public enum Status {

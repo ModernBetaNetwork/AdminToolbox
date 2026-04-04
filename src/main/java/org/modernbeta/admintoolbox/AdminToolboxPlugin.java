@@ -38,6 +38,7 @@ public class AdminToolboxPlugin extends JavaPlugin {
 
 	private File adminStateConfigFile;
 	private FileConfiguration adminStateConfig;
+	private final Object adminStateLock = new Object();
 
 	private @Nullable BlueMapIntegration blueMapIntegration = null;
 	private @Nullable LuckPermsIntegration luckPermsIntegration = null;
@@ -65,7 +66,6 @@ public class AdminToolboxPlugin extends JavaPlugin {
 		this.broadcastAudience = new PermissionAudience(BROADCAST_AUDIENCE_PERMISSION);
 
 		createAdminStateConfig();
-		this.adminStateConfig = getAdminStateConfig();
 
 		getServer().getPluginManager().registerEvents(adminManager, this);
 		getServer().getPluginManager().registerEvents(freezeManager, this);
@@ -137,14 +137,11 @@ public class AdminToolboxPlugin extends JavaPlugin {
 	}
 
 	public FileConfiguration getAdminStateConfig() {
-		// TODO: this re-reads the file from file system every time, should not be needed
-		// 		but we have run into some desynced state somehow. Figure out why!
-		try {
-			this.adminStateConfig.load(adminStateConfigFile);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 		return this.adminStateConfig;
+	}
+
+	public Object getAdminStateLock() {
+		return this.adminStateLock;
 	}
 
 	public void saveAdminStateConfig() {
