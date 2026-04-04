@@ -107,7 +107,8 @@ public class AdminState {
 		if (playerSection.isConfigurationSection("original_location")) {
 			ConfigurationSection locSection = playerSection.getConfigurationSection("original_location");
 			if (locSection != null) {
-				World world = Bukkit.getWorld(locSection.getString("world"));
+				String worldName = locSection.getString("world");
+				World world = Bukkit.getWorld(worldName);
 				if (world != null) {
 					double x = locSection.getDouble("x");
 					double y = locSection.getDouble("y");
@@ -115,6 +116,11 @@ public class AdminState {
 					float yaw = (float) locSection.getDouble("yaw");
 					float pitch = (float) locSection.getDouble("pitch");
 					history = new TeleportHistory<>(new Location(world, x, y, z, yaw, pitch));
+				} else {
+					AdminToolboxPlugin.getInstance().getLogger().warning(
+						String.format("Could not restore original location for %s — world '%s' not found. Falling back to server spawn.", playerId, worldName)
+					);
+					history = new TeleportHistory<>(Bukkit.getWorlds().get(0).getSpawnLocation());
 				}
 			}
 		}
