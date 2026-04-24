@@ -126,11 +126,6 @@ public class AdminManager implements Listener {
 			Location originalLocation = adminState.getTeleportHistory().getOriginalLocation();
 			ItemStack[] originalInventory = adminState.getSavedInventory();
 
-			if (originalLocation == null) {
-				plugin.getLogger().warning("Restore location was null for " + player.getName() + ". Falling back to server spawn.");
-				originalLocation = Bukkit.getWorlds().getFirst().getSpawnLocation();
-			}
-
 			player.teleportAsync(originalLocation).thenAccept((didTeleport) -> {
 				if (!didTeleport) {
 					player.sendRichMessage("<red>Error: Could not teleport you back to your original location.");
